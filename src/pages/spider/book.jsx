@@ -13,6 +13,10 @@ const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 const Wrapper = styled.div`
   max-width: 900px;
   margin: 50px;
+
+  .hasRecommend {
+    filter: grayscale(1);
+  }
 `;
 
 const Iframe = styled.iframe`
@@ -23,52 +27,12 @@ const Iframe = styled.iframe`
 const Book = () => {
   const [form] = Form.useForm();
   const [url, setUrl] = useState('');
+  const [isRecommend, setIsRecommend] = useState(false);
   const [action, setAction] = useState('');
   const [data, setData] = useState({});
   const [inserting, setInserting] = useState(false);
   const [insertMPRes, setInsertMPRes] = useState('');
   const [lastPage, setLastPage] = useState('');
-
-  // const insertMenusAndPages = async (id, title, thumb, from, menus) => {
-  //   setInserting(true);
-  //   setInsertMPRes('开始插入目录...');
-  //   axios({
-  //     url: `${baseUrl}getbook/insertMenuAndPages`,
-  //     method: 'post',
-  //     data: {
-  //       menus: menus.slice(0, 10),
-  //       id,
-  //       title,
-  //       thumb,
-  //       from,
-  //     },
-  //     errorTitle: '抓取错误',
-  //   }).then((res) => {
-  //     const data = res.data.data;
-  //     setInserting(false);
-  //     setInsertMPRes(`写入完成，成功插入 ${data.successLen} 条目录。失败章节${data.failedIndex.length}条：${data.failedIndex.length ? data.failedIndex.join(', ') : '无'}。`);
-  //     setLastPage(`最新章节：${data.lastPage}`)
-  //   }).catch(() => {
-  //     setInserting(false);
-  //     setInsertMPRes('写入失败');
-  //   })
-  // }
-
-  // const getMenus = (id, title, thumb, url) => {
-  //   axios({
-  //     url: `${baseUrl}getbook/getMenus`,
-  //     method: 'post',
-  //     data: {
-  //       url,
-  //     },
-  //     errorTitle: '抓取错误',
-  //   }).then((res) => {
-  //     const data = res.data.data;
-  //     if (data.length) {
-  //       insertMenusAndPages(id, title, thumb, url, data);
-  //     }
-  //   })
-  // }
 
   const onSearch = isSpider => () => {
     const action = isSpider ? 'spider' : 'view';
@@ -88,6 +52,7 @@ const Book = () => {
       method: 'post',
       data: {
         url,
+        recommend: +isRecommend
       },
       errorTitle: '抓取错误',
     }).then((res) => {
@@ -96,11 +61,17 @@ const Book = () => {
         data.url = url;
       }
       setData(data);
-      if (data && data.id) {
-        // getMenus(data.id, data.title, data.thumb, url);
-      }
+      // @TODO: 再建一个表记录抓取情况，写入抓取开始结束时间点，方便知道已经抓取完了，再把错误信息写进去
     })
   };
+
+  const onValuesChange = (changedValues) => {
+    setIsRecommend(false)
+  }
+
+  const onSetRecommend = () => {
+    setIsRecommend(!isRecommend)
+  }
 
   return (
     <Wrapper>
@@ -108,6 +79,7 @@ const Book = () => {
         name="basic"
         form={form}
         initialValues={{ remember: true }}
+        onValuesChange={onValuesChange}
       >
         <Form.Item
           label="获取书信息"
@@ -121,6 +93,9 @@ const Book = () => {
           </Button>
           <Button type="primary" onClick={onSearch(true)} style={{ marginRight: '30px' }}>
             抓取书信息及目录信息
+          </Button>
+          <Button type="primary" onClick={onSetRecommend} style={{ marginRight: '30px', background: '#e60101', borderColor: '#e60101' }} className={{ hasRecommend: isRecommend }}>
+            {isRecommend ? '取消推荐' : '设置为推荐'}
           </Button>
         </Form.Item>
       </Form>
@@ -142,7 +117,7 @@ const Book = () => {
         {inserting ? <Spin indicator={antIcon} /> : null}
       </div>
       <br /><br />
-      {/* <Iframe src={url}></Iframe> */}
+      <Iframe src={url}></Iframe>
     </Wrapper>
   );
 };
