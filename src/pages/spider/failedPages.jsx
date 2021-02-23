@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tooltip, Modal } from 'antd';
+import { Table, Tooltip, message } from 'antd';
 import styled from 'styled-components';
 import axios from '@/utils/axios';
 import { baseUrl } from '@/utils/index';
@@ -29,8 +29,7 @@ const FailedPages = () => {
         errorTitle: '抓取错误',
       }).then((res) => {
         const data = res && res.data && res.data.data
-        Modal.info({
-        });
+        message.success(typeof data === 'string' ? data : '修复失败')
       })
 
     } catch (e) {
