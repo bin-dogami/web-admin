@@ -17,6 +17,12 @@ const Wrapper = styled.div`
   .hasRecommend {
     filter: grayscale(1);
   }
+
+  .flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const Iframe = styled.iframe`
@@ -87,7 +93,9 @@ const Book = () => {
         >
           <Input />
         </Form.Item>
-        <Form.Item>
+      </Form>
+      <div className="flex">
+        <div>
           <Button type="primary" onClick={onSearch(false)} style={{ marginRight: '30px' }}>
             查询
           </Button>
@@ -97,8 +105,9 @@ const Book = () => {
           <Button type="primary" onClick={onSetRecommend} style={{ marginRight: '30px', background: '#e60101', borderColor: '#e60101' }} className={{ hasRecommend: isRecommend }}>
             {isRecommend ? '取消推荐' : '设置为推荐'}
           </Button>
-        </Form.Item>
-      </Form>
+        </div>
+        <a href="/tumorClear" target="_blank">内容清理器</a>
+      </div>
       <div>
         <h2>{action}</h2>
         {Object.keys(data).map((key) => (
@@ -117,7 +126,7 @@ const Book = () => {
         {inserting ? <Spin indicator={antIcon} /> : null}
       </div>
       <br /><br />
-      <Iframe src={url}></Iframe>
+      {/* <Iframe src={url}></Iframe> */}
     </Wrapper>
   );
 };
