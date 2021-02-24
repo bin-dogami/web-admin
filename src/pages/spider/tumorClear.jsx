@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Table, Button, message, Tooltip, Modal } from 'antd';
+import { Form, Radio, Input, Table, Button, message, Tooltip, Modal } from 'antd';
 import styled from 'styled-components';
 import axios from '@/utils/axios';
 import { baseUrl, getHost } from '@/utils/index';
@@ -27,8 +27,10 @@ const Wrapper = styled.div`
 `;
 
 const TumorClear = () => {
-  const [host, setHost] = useState('');
+  const [types, setTypes] = useState([])
+  const [host, setHost] = useState('')
   const [list, setList] = useState(null)
+  const [type, setType] = useState('')
   const [text, setText] = useState('')
   const [url, setUrl] = useState('')
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -42,8 +44,9 @@ const TumorClear = () => {
         url: `${baseUrl}fixdata/addTumor`,
         method: 'post',
         data: {
-          text,
-          host: getHost(url),
+          type,
+          text: text.trim(),
+          host: getHost(url).trim(),
         },
         errorTitle: '获取list错误',
       }).then((res) => {
@@ -123,6 +126,14 @@ const TumorClear = () => {
       dataIndex: 'id',
     },
     {
+      title: '类型',
+      dataIndex: 'type',
+      render: (type, record) => {
+        const _t = types.filter(({ value }) => value === type)
+        return type.length ? (_t.length ? _t[0].label : '类型列表没获取到') : '没有类型，数据有问题'
+      }
+    },
+    {
       title: '文本',
       dataIndex: 'text',
 
@@ -146,8 +157,33 @@ const TumorClear = () => {
     },
   ];
 
+
+  const onGetTypes = () => {
+    try {
+      setList(null)
+      axios({
+        url: `${baseUrl}fixdata/getTumorTypes`,
+        method: 'get',
+        errorTitle: '获取types错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        const _types = !data ? [] : Object.keys(data).map((type) => {
+          return {
+            label: data[type],
+            value: type
+          }
+        })
+        setTypes(_types)
+        _types.length && setType(_types[0].value)
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
   useEffect(() => {
     onSearch()
+    onGetTypes()
   }, [])
 
   const rowKey = (record) => {
@@ -164,8 +200,11 @@ const TumorClear = () => {
           <Button type="primary" onClick={onShowCreate} >添加</Button>
         </Form.Item>
       </div>
-      <Table dataSource={list} columns={columns} rowKey={rowKey} />
+      <Table dataSource={list} columns={columns} rowKey={rowKey} pagination={{ pageSize: 100 }} />
       <Modal title="添加" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+        <Form.Item label="类型">
+          <Radio.Group value={type} onChange={e => setType(e.target.value)} options={types} optionType="button" />
+        </Form.Item>
         <Form.Item label="文本">
           <Input value={text} onChange={e => setText(e.target.value)} placeholder="输入文本" />
         </Form.Item>
