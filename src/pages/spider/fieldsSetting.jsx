@@ -4,6 +4,8 @@ import styled, { createGlobalStyle } from 'styled-components';
 import axios from '@/utils/axios';
 import { baseUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY } from '@/utils/index';
 
+import Menus from '@/components/Menu.jsx'
+
 const GlobalStyle = createGlobalStyle`
   .modifyField {
     padding: 8px;
@@ -46,7 +48,7 @@ const GlobalStyle = createGlobalStyle`
 
 const Wrapper = styled.div`
   max-width: 900px;
-  margin: 50px;
+  margin: 20px 50px;
 
   h1 {
     margin-bottom: 30px;
@@ -378,6 +380,7 @@ const FailedPages = () => {
   return (
     <Wrapper>
       <GlobalStyle />
+      <Menus name={'fieldsSetting'} />
       <h1>字段更改</h1>
       <div className="chunk">
         <h2>novel字段</h2>

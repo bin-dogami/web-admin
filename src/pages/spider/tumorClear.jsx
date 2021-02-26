@@ -4,9 +4,11 @@ import styled from 'styled-components';
 import axios from '@/utils/axios';
 import { baseUrl, getHost } from '@/utils/index';
 
+import Menus from '@/components/Menu.jsx'
+
 const Wrapper = styled.div`
   max-width: 900px;
-  margin: 50px;
+  margin: 20px 50px;
 
   h2 {
     margin-bottom: 30px;
@@ -192,6 +194,7 @@ const TumorClear = () => {
 
   return (
     <Wrapper>
+      <Menus name={'tumorClear'} />
       <h1>内容清理器</h1>
       <div className="search">
         <Form.Item label="查询">

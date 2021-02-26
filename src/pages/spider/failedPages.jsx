@@ -4,9 +4,11 @@ import styled from 'styled-components';
 import axios from '@/utils/axios';
 import { baseUrl } from '@/utils/index';
 
+import Menus from '@/components/Menu.jsx'
+
 const Wrapper = styled.div`
   max-width: 900px;
-  margin: 50px;
+  margin: 20px 50px;
 
   h2 {
     margin-bottom: 30px;
@@ -76,6 +78,10 @@ const FailedPages = () => {
       }
     },
     {
+      title: '小说名称',
+      dataIndex: 'title'
+    },
+    {
       title: '失败章节数量',
       dataIndex: 'count',
       render: (count, record, index) => {
@@ -123,6 +129,7 @@ const FailedPages = () => {
 
   return (
     <Wrapper>
+      <Menus name={'failedPages'} />
       <h2>抓取失败列表</h2>
       <Table dataSource={data} columns={columns} rowKey={rowKey} />
     </Wrapper>

@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Row, Col } from 'antd';
-
 import styled from 'styled-components';
 import axios from '@/utils/axios';
 import { baseUrl } from '@/utils/index';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
+import Menus from '@/components/Menu.jsx'
+
 const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
 
 const Wrapper = styled.div`
   max-width: 900px;
-  margin: 50px;
+  margin: 20px 50px;
 
   .hasRecommend {
     filter: grayscale(1);
@@ -81,6 +82,7 @@ const Book = () => {
 
   return (
     <Wrapper>
+      <Menus name={'book'} />
       <Form
         name="basic"
         form={form}
@@ -108,7 +110,7 @@ const Book = () => {
         </div>
         <a href="/tumorClear" target="_blank">内容清理器</a>
       </div>
-      <div>
+      <div style={{ marginTop: 30 }}>
         <h2>{action}</h2>
         {Object.keys(data).map((key) => (
           <Row key={key}>
