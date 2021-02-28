@@ -31,11 +31,12 @@ const Iframe = styled.iframe`
   height: 500px;
 `;
 
+const defaultNum = 5
 const Book = () => {
   const [form] = Form.useForm();
   const [url, setUrl] = useState('');
   const [isRecommend, setIsRecommend] = useState(false);
-  const [mnum, setMnum] = useState(isDev ? 5 : '');
+  const [mnum, setMnum] = useState(isDev ? defaultNum : '');
   const [action, setAction] = useState('');
   const [data, setData] = useState({});
   const [inserting, setInserting] = useState(false);
@@ -100,7 +101,7 @@ const Book = () => {
   }
 
   const onSetMnum = () => {
-    setMnum(mnum === 5 ? '' : 5)
+    setMnum(mnum === defaultNum ? '' : defaultNum)
   }
 
   return (
@@ -134,7 +135,7 @@ const Book = () => {
             {isRecommend ? '取消推荐' : '设置为推荐'}
           </Button>
           <Button type="primary" onClick={onSetMnum} style={{ marginRight: '30px', background: '#e60101', borderColor: '#e60101' }} className={{ hasRecommend: mnum === '' }}>
-            {mnum ? '去设置抓取全部目录' : '去设置抓取前5个目录'}
+            {mnum ? '去设置抓取全部目录' : `去设置抓取前${defaultNum}个目录`}
           </Button>
         </div>
         <a href="/tumorClear" target="_blank">内容清理器</a>
