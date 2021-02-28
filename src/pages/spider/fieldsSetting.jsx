@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { Form, Input, InputNumber, Button, message, Empty, Tooltip } from 'antd';
+import { Form, Input, InputNumber, Button, message, Modal, Empty, Tooltip } from 'antd';
 import styled, { createGlobalStyle } from 'styled-components';
 import axios from '@/utils/axios';
 import { baseUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY } from '@/utils/index';
@@ -122,7 +122,7 @@ const Wrapper = styled.div`
 `;
 
 const maxStoredBooks = 20
-const ModifyAction = ({ id, name, status, modifyFnName }) => {
+const ModifyAction = ({ id, name, html, status, modifyFnName }) => {
   const [fieldValue, setFieldValue] = useState('')
   const onChangeFieldValue = e => {
     const { value } = e.target;
@@ -141,7 +141,11 @@ const ModifyAction = ({ id, name, status, modifyFnName }) => {
     }
   }
   let dom = null
-  if (name === 'isComplete') {
+  if (name === 'deleteBook') {
+    dom = (
+      <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >确认要删除</Button>
+    )
+  } else if (name === 'isComplete') {
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, name, !status)} >{status ? '更改为#连载#' : '更改为#完本#'}</Button>
     )
@@ -166,7 +170,7 @@ const ModifyAction = ({ id, name, status, modifyFnName }) => {
 
   return (
     <Tooltip title={htmlModifyBookField} placement="right" onVisibleChange={onVisibleChange} trigger="click" overlayStyle={{ maxWidth: 300 }}>
-      <span className="btn">修改</span>
+      <span className="btn">{html || '修改'}</span>
     </Tooltip>
   )
 }
@@ -237,6 +241,26 @@ const FailedPages = () => {
       </>
     )
   }, [historyBooks])
+
+  const onDeleteBook = (id) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/deleteBook`,
+        method: 'post',
+        data: {
+          id,
+        },
+        errorTitle: '删除错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string') {
+          Modal.info({ content: data })
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   const onModifyBook = (id, fieldName, fieldValue) => () => {
     try {
@@ -344,24 +368,24 @@ const FailedPages = () => {
     )
   }, [historyAuthors])
 
-  const onReGet = (id) => {
-    try {
-      axios({
-        url: `${baseUrl}fixdata/reGetPages`,
-        method: 'get',
-        params: {
-          id,
-        },
-        errorTitle: '抓取错误',
-      }).then((res) => {
-        const data = res && res.data && res.data.data
-        message.success(data)
-      })
+  // const onReGet = (id) => {
+  //   try {
+  //     axios({
+  //       url: `${baseUrl}fixdata/reGetPages`,
+  //       method: 'get',
+  //       params: {
+  //         id,
+  //       },
+  //       errorTitle: '抓取错误',
+  //     }).then((res) => {
+  //       const data = res && res.data && res.data.data
+  //       message.success(data)
+  //     })
 
-    } catch (e) {
-      console.log(e)
-    }
-  }
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  // }
 
   useEffect(() => {
     const storaged = localStorage.getItem(BOOK_SEARCH_HISTORY_KEY)
@@ -397,7 +421,10 @@ const FailedPages = () => {
           <div className="data">
             {!bookInfo ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} /> :
               <ul className="list">
-                <li><strong>小说Id: </strong><span>{bookInfo.id}</span></li>
+                <li>
+                  <strong>小说Id: </strong><span>{bookInfo.id}</span>
+                  <ModifyAction id={bookInfo.id} html="删除本书" name={"deleteBook"} modifyFnName={onDeleteBook} />
+                </li>
                 <li><strong>小说名: </strong><span>{bookInfo.title}</span></li>
                 <li><strong>访问量: </strong><span>{bookInfo.viewnum}</span></li>
                 <li><strong>章节总数: </strong><span>{bookInfo.menusLen} 章</span></li>

@@ -71,15 +71,15 @@ const FailedPages = () => {
     {
       title: '小说ID',
       dataIndex: 'id',
-      render: (id, record) => {
-        return (
-          <a href={`http://m.zjjdxr.com/book/${id}`} target="_blank">{id}</a>
-        )
-      }
     },
     {
       title: '小说名称',
-      dataIndex: 'title'
+      dataIndex: 'title',
+      render: (title, record) => {
+        return (
+          <a href={`http://m.zjjdxr.com/book/${record.id}`} target="_blank">{title}</a>
+        )
+      }
     },
     {
       title: '失败章节数量',
