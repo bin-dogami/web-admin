@@ -5,6 +5,7 @@ import Loading from '@/components/Loading';
 import Book from '../pages/spider/book'
 import FailedPages from '../pages/spider/failedPages'
 import FieldsSetting from '../pages/spider/fieldsSetting'
+import RepeatsMenu from '../pages/spider/repeatsMenu'
 import TumorClear from '../pages/spider/tumorClear'
 
 const Routes = () => (
@@ -13,6 +14,7 @@ const Routes = () => (
       < Route exact path='/' component={Book} />
       < Route exact path='/failedPages' component={FailedPages} />
       < Route exact path='/fieldsSetting' component={FieldsSetting} />
+      < Route exact path='/repeatsMenu' component={RepeatsMenu} />
       < Route exact path='/tumorClear' component={TumorClear} />
       <Redirect from="*" to='/' />
     </Switch>

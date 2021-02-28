@@ -7,7 +7,6 @@ import { baseUrl, getHost } from '@/utils/index';
 import Menus from '@/components/Menu.jsx'
 
 const Wrapper = styled.div`
-  max-width: 900px;
   margin: 20px 50px;
 
   h2 {

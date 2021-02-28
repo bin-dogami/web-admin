@@ -5,7 +5,6 @@ import axios from '@/utils/axios';
 import { baseUrl } from '@/utils/index';
 
 const Wrapper = styled.div`
-  max-width: 900px;
   margin: 50px;
 `;
 

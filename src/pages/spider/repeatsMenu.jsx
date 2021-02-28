@@ -1,0 +1,222 @@
+import React, { useEffect, useState } from 'react';
+import { Table, Tooltip, message } from 'antd';
+import styled from 'styled-components';
+import axios from '@/utils/axios';
+import { baseUrl } from '@/utils/index';
+
+import Menus from '@/components/Menu.jsx'
+import ModifyAction from '@/components/ModifyAction.jsx'
+
+const Wrapper = styled.div`
+  margin: 20px 50px;
+
+  h2 {
+    margin-bottom: 30px;
+  }
+
+  .btn {
+    color: #1890ff;
+  }
+`;
+
+const RepeatsMenu = () => {
+  const [data, setData] = useState([]);
+
+  const onReGet = id => e => {
+    e.preventDefault()
+
+    try {
+      axios({
+        url: `${baseUrl}getbook/reGetPages`,
+        method: 'get',
+        params: {
+          id,
+        },
+        errorTitle: '抓取错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        message.success(typeof data === 'string' ? data : '修复失败')
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onVisibleChange = (record, index) => (visible) => {
+
+    const id = record.id
+
+    if (!visible || record.mIds) {
+      return
+    }
+
+    try {
+      axios({
+        url: `${baseUrl}getbook/getRepeatedMenuIds`,
+        method: 'get',
+        params: {
+          id,
+        },
+        errorTitle: '抓取错误',
+      }).then((res) => {
+        const _data = res && res.data && Array.isArray(res.data.data) ? res.data.data : [];
+        const newData = JSON.parse(JSON.stringify(data))
+        newData[index].mIds = _data.length ? `前20个目录ID：${_data.join(', ')}` : '啥也没有'
+        newData[index].key = `${id}0${id}`
+        setData(newData)
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const columns = [
+    {
+      title: '小说ID',
+      dataIndex: 'id',
+    },
+    {
+      title: '小说名称',
+      dataIndex: 'title',
+      render: (title, record) => {
+        return (
+          <a href={`http://m.zjjdxr.com/book/${record.id}`} target="_blank">{title}</a>
+        )
+      }
+    },
+    {
+      title: '失败章节数量',
+      dataIndex: 'count',
+    },
+    {
+      title: '操作',
+      dataIndex: 'handler',
+      render: (text, record) => {
+        return (
+          <a>暂无</a>
+        )
+      }
+    },
+  ];
+
+  // 子表格
+  const [subData, setSubData] = useState([])
+  const onExpand = (expanded, record) => {
+    if (expanded) {
+      try {
+        setSubData([])
+        axios({
+          url: `${baseUrl}getbook/getRepeatedMenuIds`,
+          method: 'get',
+          params: {
+            id: record.id,
+          },
+          errorTitle: '抓取错误',
+        }).then((res) => {
+          const _data = res && res.data && Array.isArray(res.data.data) ? res.data.data : [];
+          setSubData(_data)
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  }
+  // name 是 error 表这条数据的 id
+  const onModifyIndex = (id, errorId, value) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/modifyMenuIndex`,
+        method: 'post',
+        data: {
+          id,
+          value,
+          errorId
+        },
+        errorTitle: '修改错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string' && !data.length) {
+          message.success('修改成功')
+          onExpand(true, { id: errorId })
+        } else {
+          message.error(typeof data === 'string' && data.length ? data : '修改错误')
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  const expandedRowRender = () => {
+    const columns = [
+      {
+        title: '目录ID',
+        dataIndex: 'menuId',
+        width: 100
+      },
+      {
+        title: '目录原始名',
+        dataIndex: 'moriginalname',
+        width: 200
+      },
+      {
+        title: 'index',
+        dataIndex: 'menuIndex',
+        render: (menuIndex, record) => {
+          return (
+            <>
+              <span style={{ marginRight: 20 }}>{menuIndex}</span>
+              <ModifyAction id={record.menuId} name={record.id} modifyFnName={onModifyIndex} />
+            </>
+          )
+        },
+        width: 150
+      },
+      {
+        title: '说明',
+        dataIndex: 'info',
+      },
+    ]
+
+    const rowKey = (record) => {
+      return record.id
+    }
+
+    return <Table columns={columns} dataSource={subData} pagination={false} rowKey={rowKey} />;
+  }
+
+  const getList = () => {
+    try {
+      axios({
+        url: `${baseUrl}getbook/getRepeatedMenuBooks`,
+        method: 'get',
+        errorTitle: '抓取错误',
+      }).then((res) => {
+        const data = res && res.data && Array.isArray(res.data.data) ? res.data.data : [];
+        setData(data);
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  };
+
+  useEffect(() => {
+    getList()
+  }, [])
+
+  const rowKey = (record) => {
+    return record.id
+  }
+
+  return (
+    <Wrapper>
+      <Menus name={'repeatsMenu'} />
+      <h2>index重复的目录处理</h2>
+      <Table dataSource={data} columns={columns} rowKey={rowKey} expandable={{ expandedRowRender, onExpand }} />
+    </Wrapper>
+  );
+};
+
+export default RepeatsMenu;

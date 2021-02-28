@@ -5,6 +5,7 @@ import axios from '@/utils/axios';
 import { baseUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY } from '@/utils/index';
 
 import Menus from '@/components/Menu.jsx'
+import ModifyAction from '@/components/ModifyAction.jsx'
 
 const GlobalStyle = createGlobalStyle`
   .modifyField {
@@ -122,58 +123,7 @@ const Wrapper = styled.div`
 `;
 
 const maxStoredBooks = 20
-const ModifyAction = ({ id, name, html, status, modifyFnName }) => {
-  const [fieldValue, setFieldValue] = useState('')
-  const onChangeFieldValue = e => {
-    const { value } = e.target;
-    setFieldValue(value)
-  }
-  const onVisibleChange = (visible) => {
-    !visible && setFieldValue('')
-  }
-  const onModifyFieldValue = (id, field, value) => () => {
-    if (value !== undefined) {
-      modifyFnName(id, field, value)()
-      return;
-    }
-    if (fieldValue.trim().length) {
-      modifyFnName(id, field, fieldValue)()
-    }
-  }
-  let dom = null
-  if (name === 'deleteBook') {
-    dom = (
-      <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >确认要删除</Button>
-    )
-  } else if (name === 'isComplete') {
-    dom = (
-      <Button type="primary" onClick={onModifyFieldValue(id, name, !status)} >{status ? '更改为#连载#' : '更改为#完本#'}</Button>
-    )
-  } else if (name === 'isSpiderComplete') {
-    dom = (
-      <Button type="primary" onClick={onModifyFieldValue(id, name, !status)} >{status ? '更改为#未抓取完成#' : '更改为#已抓取完成#'}</Button>
-    )
-  } else {
-    dom = (
-      <>
-        <Input value={fieldValue} onChange={onChangeFieldValue} placeholder="输入值" />
-        <Button type="primary" onClick={onModifyFieldValue(id, name)} >更改</Button>
-      </>
-    )
-  }
 
-  const htmlModifyBookField = (
-    <div className="modifyField">
-      {dom}
-    </div>
-  )
-
-  return (
-    <Tooltip title={htmlModifyBookField} placement="right" onVisibleChange={onVisibleChange} trigger="click" overlayStyle={{ maxWidth: 300 }}>
-      <span className="btn">{html || '修改'}</span>
-    </Tooltip>
-  )
-}
 
 const FailedPages = () => {
   const [bookValue, setBookValue] = useState('');
@@ -387,6 +337,15 @@ const FailedPages = () => {
   //   }
   // }
 
+  const onClearHistory = (key) => () => {
+    localStorage.removeItem(key)
+    if (key === BOOK_SEARCH_HISTORY_KEY) {
+      setHistoryBooks([])
+    } else if (key === AUTHOR_SEARCH_HISTORY_KEY) {
+      setHistoryAuthors([])
+    }
+  }
+
   useEffect(() => {
     const storaged = localStorage.getItem(BOOK_SEARCH_HISTORY_KEY)
     if (storaged) {
@@ -414,7 +373,7 @@ const FailedPages = () => {
               <InputNumber value={bookValue} onChange={onChangeBookId} placeholder="输入id" />
               <Button type="primary" onClick={onSearchBook} >查询</Button>
               <Tooltip title={htmlHistoryBooks} color="gold" placement="bottom" overlayStyle={{ maxWidth: 300 }}>
-                <span className="history">历史查找</span>
+                <span className="history">历史查找(<span onClick={onClearHistory(BOOK_SEARCH_HISTORY_KEY)}>清除</span>)</span>
               </Tooltip>
             </Form.Item>
           </div>
@@ -459,7 +418,7 @@ const FailedPages = () => {
               <Input value={authorValue} onChange={onChangeAuthorId} placeholder="输入id or 名称" />
               <Button type="primary" onClick={onSearchAuthor} >查询</Button>
               <Tooltip title={htmlHistoryAuthors} color="gold" placement="bottom" overlayStyle={{ maxWidth: 300 }}>
-                <span className="history">历史查找</span>
+                <span className="history">历史查找(<span onClick={onClearHistory(AUTHOR_SEARCH_HISTORY_KEY)}>清除</span>)</span>
               </Tooltip>
             </Form.Item>
           </div>

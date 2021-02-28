@@ -1,1 +1,12 @@
 @import '~antd/dist/antd.css';
+
+
+.modifyField {
+  padding: 8px;
+  white-space: nowrap;
+}
+
+.modifyField input {
+  margin-right: 15px;
+  width: 180px;
+}
