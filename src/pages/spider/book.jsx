@@ -14,6 +14,10 @@ const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 const Wrapper = styled.div`
   margin: 20px 50px;
 
+  button {
+    margin-bottom: 20px;
+  }
+
   .hasRecommend {
     filter: grayscale(1);
   }
@@ -30,7 +34,7 @@ const Iframe = styled.iframe`
   height: 500px;
 `;
 
-const defaultNum = 200
+const defaultNum = 5
 const Book = () => {
   const [form] = Form.useForm();
   const [url, setUrl] = useState('');

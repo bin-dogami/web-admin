@@ -7,5 +7,5 @@ export const AUTHOR_SEARCH_HISTORY_KEY = 'author_search_history_key'
 
 // 获取域名，不带 http
 export const getHost = (url) => {
-  return url.replace(/(?<=(https?:\/\/)[^\/]+)\/.*/, '').replace(/https?:\/\//, '')
+  return url.replace(/https?:\/\//, '').replace(/\/.*/, '')
 }
