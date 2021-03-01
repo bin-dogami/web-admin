@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { Form, Input, InputNumber, Button, message, Modal, Empty, Tooltip } from 'antd';
+import { Form, Input, InputNumber, Button, message, Modal, Empty, Tooltip, Table } from 'antd';
+
 import styled, { createGlobalStyle } from 'styled-components';
 import axios from '@/utils/axios';
-import { baseUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY } from '@/utils/index';
+import { baseUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY, copyText } from '@/utils/index';
 
 import Menus from '@/components/Menu.jsx'
 import ModifyAction from '@/components/ModifyAction.jsx'
+import Last100Books from '@/components/Last100Books.jsx'
 
 const GlobalStyle = createGlobalStyle`
   .modifyField {
@@ -120,7 +122,6 @@ const Wrapper = styled.div`
 
 const maxStoredBooks = 20
 
-
 const FailedPages = () => {
   const [bookValue, setBookValue] = useState('');
   const [bookInfo, setBookInfo] = useState(null)
@@ -144,6 +145,7 @@ const FailedPages = () => {
   }
 
   const onSearchBook = id => {
+    setBookValue(typeof id === 'number' ? `${id}` : bookValue)
     try {
       setBookInfo(null)
       axios({
@@ -160,6 +162,9 @@ const FailedPages = () => {
         }
         if (data && typeof data === 'object') {
           setBookInfo(data)
+          if (data.authorId) {
+            onSearchAuthor(data.authorId)
+          }
           _setHistoryBooks({
             id: data.id,
             title: data.title
@@ -175,7 +180,7 @@ const FailedPages = () => {
   }
 
   const onSelectHistoryBook = id => () => {
-    setBookValue(`${id}`)
+    // setBookValue(`${id}`)
     onSearchBook(id)
   }
   const htmlHistoryBooks = useMemo(() => {
@@ -203,6 +208,31 @@ const FailedPages = () => {
           Modal.info({ content: data })
         }
       })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onSetRecommend = (id, fieldName, fieldValue) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/setRecommend`,
+        method: 'post',
+        data: {
+          id,
+          toRec: fieldValue
+        },
+        errorTitle: '修改错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string' && !data.length) {
+          message.success('设置成功')
+          onSearchBook()
+        } else {
+          message.error(typeof data === 'string' && data.length ? data : '修改错误')
+        }
+      })
+
     } catch (e) {
       console.log(e)
     }
@@ -262,7 +292,8 @@ const FailedPages = () => {
     setAuthorValue(value)
   }
 
-  const onSearchAuthor = (id) => {
+  function onSearchAuthor (id) {
+    setAuthorValue(typeof id === 'number' ? `${id}` : authorValue.trim())
     try {
       axios({
         url: `${baseUrl}fixdata/getAuthorInfo`,
@@ -301,7 +332,7 @@ const FailedPages = () => {
   }
 
   const onSelectHistoryAuthor = id => () => {
-    setAuthorValue(`${id}`)
+    // setAuthorValue(`${id}`)
     onSearchAuthor(id)
   }
   const htmlHistoryAuthors = useMemo(() => {
@@ -313,25 +344,6 @@ const FailedPages = () => {
       </>
     )
   }, [historyAuthors])
-
-  // const onReGet = (id) => {
-  //   try {
-  //     axios({
-  //       url: `${baseUrl}fixdata/reGetPages`,
-  //       method: 'get',
-  //       params: {
-  //         id,
-  //       },
-  //       errorTitle: '抓取错误',
-  //     }).then((res) => {
-  //       const data = res && res.data && res.data.data
-  //       message.success(data)
-  //     })
-
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // }
 
   const onClearHistory = (key) => () => {
     localStorage.removeItem(key)
@@ -354,11 +366,34 @@ const FailedPages = () => {
     }
   }, [])
 
+  const onSpider = (url) => () => {
+    if (!Array.isArray(url) || !url.length) {
+      return
+    }
+    try {
+      message.info('开始抓取')
+      axios({
+        url: `${baseUrl}getbook/spider`,
+        method: 'post',
+        data: {
+          url: url[url.length - 1].trim(),
+          mnum: '',
+          recommend: ''
+        },
+        errorTitle: '抓取错误',
+      }).then((res) => {
+        //
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <Wrapper className="wrapper">
       <GlobalStyle />
       <Menus name={'fieldsSetting'} />
-      <h1>字段更改</h1>
+      <Last100Books onSearchBook={onSearchBook} onSpider={onSpider} />
       <div className="chunk">
         <h2>novel字段</h2>
         <div className="content">
@@ -378,7 +413,17 @@ const FailedPages = () => {
                   <strong>小说Id: </strong><span>{bookInfo.id}</span>
                   <ModifyAction id={bookInfo.id} html="删除本书" name={"deleteBook"} modifyFnName={onDeleteBook} />
                 </li>
+                <li>
+                  <strong>是否热门推荐: </strong>
+                  <span>{bookInfo.isRecommend ? '是' : '否'}</span>
+                  <ModifyAction id={bookInfo.id} status={bookInfo.isRecommend} name={"setRecommend"} modifyFnName={onSetRecommend} />
+                </li>
                 <li><strong>小说名: </strong><span>{bookInfo.title}</span></li>
+                <li>
+                  <strong>来源: </strong>
+                  <span>{bookInfo.from}</span>
+                  <span className="btn" onClick={onSpider(bookInfo.from)}>再次抓取</span>
+                </li>
                 <li><strong>访问量: </strong><span>{bookInfo.viewnum}</span></li>
                 <li><strong>章节总数: </strong><span>{bookInfo.menusLen} 章</span></li>
                 <li><strong>类型: </strong><span>{bookInfo.typename}</span></li>
@@ -388,7 +433,7 @@ const FailedPages = () => {
                 </li>
                 <li><strong>作者: </strong><span>{bookInfo.author}</span></li>
                 <li>
-                  <strong>作者Id: </strong><span>{bookInfo.authorId}</span>
+                  <strong>作者Id: </strong><span onClick={() => onSearchAuthor(bookInfo.authorId)}>{bookInfo.authorId}</span>
                   <ModifyAction id={bookInfo.id} name={"authorId"} modifyFnName={onModifyBook} />
                 </li>
                 <li>
@@ -422,7 +467,11 @@ const FailedPages = () => {
                 <li><strong>作者Id: </strong><span>{authorInfo.id}</span></li>
                 <li><strong>名称: </strong><span>{authorInfo.name}</span></li>
                 <li><strong>等级: </strong><span>{authorInfo.level}{authorInfo.levelName.includes(',') ? '' : `（${authorInfo.levelName}）`}</span></li>
-                <li><strong>作品: </strong><span>共 {authorInfo.novelIds.trim().length ? authorInfo.novelIds.split(',').length : 0} 本: {authorInfo.novelIds}</span></li>
+                <li><strong>作品: </strong><span>共 {authorInfo.novelIds.trim().length ? authorInfo.novelIds.split(',').length : 0} 本: {
+                  authorInfo.novelIds.split(',').map((id) => (
+                    <span key={id} onClick={() => onSearchBook(+id)}>{id}</span>
+                  ))
+                }</span></li>
               </ul>
             }
           </div>

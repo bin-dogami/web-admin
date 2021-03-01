@@ -47,6 +47,10 @@ const ModifyAction = ({ id, name, html, status, modifyFnName }) => {
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, name, !status)} >{status ? '更改为#连载#' : '更改为#完本#'}</Button>
     )
+  } else if (name === 'setRecommend') {
+    dom = (
+      <Button type="primary" onClick={onModifyFieldValue(id, name, !status)} >{status ? '取消推荐' : '设置为推荐'}</Button>
+    )
   } else if (name === 'isSpiderComplete') {
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, name, !status)} >{status ? '更改为#未抓取完成#' : '更改为#已抓取完成#'}</Button>

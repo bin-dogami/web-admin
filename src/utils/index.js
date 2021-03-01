@@ -9,3 +9,17 @@ export const AUTHOR_SEARCH_HISTORY_KEY = 'author_search_history_key'
 export const getHost = (url) => {
   return url.replace(/https?:\/\//, '').replace(/\/.*/, '')
 }
+
+
+export const copyText = (value) => {
+  const input = document.createElement('input');
+  input.setAttribute('readonly', 'readonly');
+  input.setAttribute('value', value);
+  document.body.appendChild(input);
+  input.select();
+  input.setSelectionRange(0, 9999);
+  if (document.execCommand('copy')) {
+    document.execCommand('copy');
+  }
+  document.body.removeChild(input);
+}
