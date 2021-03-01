@@ -20,8 +20,8 @@ const Wrapper = styled(Tooltip)`
   }
 `
 
-const ModifyAction = ({ id, name, html, status, modifyFnName }) => {
-  const [fieldValue, setFieldValue] = useState('')
+const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) => {
+  const [fieldValue, setFieldValue] = useState(defaultValue || '')
   const onChangeFieldValue = e => {
     const { value } = e.target;
     setFieldValue(value)

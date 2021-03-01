@@ -418,7 +418,10 @@ const FailedPages = () => {
                   <span>{bookInfo.isRecommend ? '是' : '否'}</span>
                   <ModifyAction id={bookInfo.id} status={bookInfo.isRecommend} name={"setRecommend"} modifyFnName={onSetRecommend} />
                 </li>
-                <li><strong>小说名: </strong><span>{bookInfo.title}</span></li>
+                <li>
+                  <strong>小说名: </strong><span>{bookInfo.title}</span>
+                  <ModifyAction id={bookInfo.id} defaultValue={bookInfo.title} name={"title"} modifyFnName={onModifyBook} />
+                </li>
                 <li>
                   <strong>来源: </strong>
                   <span>{bookInfo.from}</span>
