@@ -83,7 +83,6 @@ const Wrapper = styled.div`
     display: none;
   }
 
-
   .data {
     min-height: 100px;
     padding: 20px;
