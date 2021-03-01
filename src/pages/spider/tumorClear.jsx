@@ -7,7 +7,6 @@ import { baseUrl, getHost } from '@/utils/index';
 import Menus from '@/components/Menu.jsx'
 
 const Wrapper = styled.div`
-  margin: 20px 50px;
 
   h2 {
     margin-bottom: 30px;
@@ -17,7 +16,7 @@ const Wrapper = styled.div`
     margin-bottom: 20px;
   }
 
-  .ant-input-number, .ant-input {
+  .ant-input-number, .ant-input-affix-wrapper {
     width: 200px;
     margin-right: 30px;
   }
@@ -192,12 +191,12 @@ const TumorClear = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper className="wrapper">
       <Menus name={'tumorClear'} />
       <h1>内容清理器</h1>
       <div className="search">
         <Form.Item label="查询">
-          <Input value={host} onChange={e => setHost(e.target.value)} placeholder="输入url" />
+          <Input allowClear value={host} onChange={e => setHost(e.target.value)} style={{ marginBottom: 20 }} placeholder="输入url" />
           <Button type="primary" onClick={onSearch} >查询</Button>
           <Button type="primary" onClick={onShowCreate} >添加</Button>
         </Form.Item>
@@ -208,10 +207,10 @@ const TumorClear = () => {
           <Radio.Group value={type} onChange={e => setType(e.target.value)} options={types} optionType="button" />
         </Form.Item>
         <Form.Item label="文本">
-          <Input value={text} onChange={e => setText(e.target.value)} placeholder="输入文本" />
+          <Input allowClear value={text} onChange={e => setText(e.target.value)} placeholder="输入文本" />
         </Form.Item>
         <Form.Item label="url">
-          <Input value={url} onChange={e => setUrl(e.target.value)} placeholder="输入url" />
+          <Input allowClear value={url} onChange={e => setUrl(e.target.value)} placeholder="输入url" />
         </Form.Item>
       </Modal>
     </Wrapper>

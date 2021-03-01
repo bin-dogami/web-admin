@@ -48,9 +48,6 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const Wrapper = styled.div`
-  max-width: 900px;
-  margin: 20px 50px;
-
   h1 {
     margin-bottom: 30px;
   }
@@ -71,7 +68,7 @@ const Wrapper = styled.div`
   .search { margin-bottom: 20px;
   }
 
-  .ant-input-number, .ant-input {
+  .ant-input-number, .ant-input-affix-wrapper {
     width: 200px;
     margin-right: 30px;
   }
@@ -356,12 +353,10 @@ const FailedPages = () => {
     if (storaged2) {
       setHistoryAuthors(JSON.parse(storaged2))
     }
-
-
   }, [])
 
   return (
-    <Wrapper>
+    <Wrapper className="wrapper">
       <GlobalStyle />
       <Menus name={'fieldsSetting'} />
       <h1>字段更改</h1>
@@ -415,7 +410,7 @@ const FailedPages = () => {
         <div className="content">
           <div className="search">
             <Form.Item label="查询">
-              <Input value={authorValue} onChange={onChangeAuthorId} placeholder="输入id or 名称" />
+              <Input allowClear value={authorValue} onChange={onChangeAuthorId} placeholder="输入id or 名称" />
               <Button type="primary" onClick={onSearchAuthor} >查询</Button>
               <Tooltip title={htmlHistoryAuthors} color="gold" placement="bottom" overlayStyle={{ maxWidth: 300 }}>
                 <span className="history">历史查找(<span onClick={onClearHistory(AUTHOR_SEARCH_HISTORY_KEY)}>清除</span>)</span>

@@ -8,7 +8,6 @@ import Menus from '@/components/Menu.jsx'
 import ModifyAction from '@/components/ModifyAction.jsx'
 
 const Wrapper = styled.div`
-  margin: 20px 50px;
 
   h2 {
     margin-bottom: 30px;
@@ -211,7 +210,7 @@ const RepeatsMenu = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper className="wrapper">
       <Menus name={'repeatsMenu'} />
       <h2>index重复的目录处理</h2>
       <Table dataSource={data} columns={columns} rowKey={rowKey} expandable={{ expandedRowRender, onExpand }} />

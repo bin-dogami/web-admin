@@ -54,7 +54,7 @@ const ModifyAction = ({ id, name, html, status, modifyFnName }) => {
   } else {
     dom = (
       <>
-        <Input value={fieldValue} onChange={onChangeFieldValue} placeholder="输入值" />
+        <Input allowClear value={fieldValue} onChange={onChangeFieldValue} placeholder="输入值" />
         <Button type="primary" onClick={onModifyFieldValue(id, name)} >更改</Button>
       </>
     )

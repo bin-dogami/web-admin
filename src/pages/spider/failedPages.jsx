@@ -7,7 +7,6 @@ import { baseUrl } from '@/utils/index';
 import Menus from '@/components/Menu.jsx'
 
 const Wrapper = styled.div`
-  margin: 20px 50px;
 
   h2 {
     margin-bottom: 30px;
@@ -127,7 +126,7 @@ const FailedPages = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper className="wrapper">
       <Menus name={'failedPages'} />
       <h2>抓取失败列表</h2>
       <Table dataSource={data} columns={columns} rowKey={rowKey} />

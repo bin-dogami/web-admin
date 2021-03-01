@@ -10,10 +10,7 @@ import Menus from '@/components/Menu.jsx'
 
 const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
-
 const Wrapper = styled.div`
-  margin: 20px 50px;
-
   button {
     margin-bottom: 20px;
   }
@@ -27,6 +24,7 @@ const Wrapper = styled.div`
     justify-content: space-between;
     align-items: center;
   }
+
 `;
 
 const Iframe = styled.iframe`
@@ -108,7 +106,7 @@ const Book = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper className="wrapper">
       <Menus name={'book'} />
       <Form
         name="basic"
@@ -120,7 +118,7 @@ const Book = () => {
           label="获取书信息"
           name="url"
         >
-          <Input />
+          <Input allowClear />
         </Form.Item>
       </Form>
       <div className="flex">
