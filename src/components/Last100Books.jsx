@@ -1,10 +1,32 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { Table } from 'antd';
+import { Button, Table, Modal, message } from 'antd';
 import axios from '@/utils/axios';
 import { baseUrl, copyText } from '@/utils/index';
+import {
+  SyncOutlined,
+} from '@ant-design/icons';
+
+import styled, { createGlobalStyle } from 'styled-components';
+const Wrapper = styled.div`
+  .chunk h2 {
+    margin-bottom: 0;
+  }
+  .flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    button {
+      margin-left: 15px;
+      margin-right: 0;
+    }
+  }
+`
 
 const Last100Books = ({ onSearchBook, onSpider }) => {
   const [data, setData] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const onClick = id => {
     onSearchBook(id)
@@ -60,16 +82,80 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
   ]
 
   const getList = () => {
+    if (loading) {
+      return
+    }
+    setLoading(true)
     try {
       axios({
         url: `${baseUrl}fixdata/getLastBookList`,
         method: 'get',
         errorTitle: '获取书本错误',
       }).then((res) => {
+        setLoading(false)
         const data = res && res.data && res.data.data
         setData(Array.isArray(data) ? data : [])
       })
+    } catch (e) {
+      setLoading(false)
+      console.log(e)
+    }
+  }
 
+  const onDetectIsSpidering = () => {
+    try {
+      axios({
+        url: `${baseUrl}getbook/detectWhoIsSpidering`,
+        method: 'get',
+        errorTitle: '探查是否有书在抓取中错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        Modal.info({ title: typeof data === 'string' ? data : '我也不知道咋回事' })
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onCancelIsSpidering = () => {
+    try {
+      axios({
+        url: `${baseUrl}getbook/setAllStopSpidering`,
+        method: 'post',
+        errorTitle: '取消所有抓取状态错误',
+      }).then((res) => {
+        // const data = res && res.data && res.data.data
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onInitSpiderData = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/initSpiderData`,
+        method: 'post',
+        errorTitle: '初始化spider数据错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onSpiderAll = () => {
+    message.info('开始抓取全部书了')
+    try {
+      axios({
+        url: `${baseUrl}getbook/spiderAll`,
+        method: 'post',
+        errorTitle: '抓取全部书错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        Modal.info({ title: typeof data === 'string' ? data : '我也不知道咋回事' })
+      })
     } catch (e) {
       console.log(e)
     }
@@ -84,12 +170,24 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
   }
 
   return (
-    <div className="chunk">
-      <h2>最新抓取的小说list</h2>
-      <div className="content">
-        <Table dataSource={data} size={'small'} pagination={{ pageSize: 5 }} columns={columns} rowKey={rowKey} />
+    <Wrapper>
+      <div className="chunk">
+        <div className="flex">
+          <h2>最新抓取的小说list</h2>
+          <div>
+            {/*  @TODO: 用完注释掉吧 */}
+            <Button onClick={onInitSpiderData}>初始化spider表数据</Button>
+            <Button onClick={onDetectIsSpidering}>是否有书在抓取中</Button>
+            <Button onClick={onCancelIsSpidering}>取消所有抓取状态</Button>
+            <Button onClick={onSpiderAll}>抓取所有书</Button>
+            <Button disabled={loading} onClick={() => getList()}><SyncOutlined spin={loading} /></Button>
+          </div>
+        </div>
+        <div className="content">
+          <Table dataSource={data} size={'small'} pagination={{ pageSize: 5 }} loading={loading} columns={columns} rowKey={rowKey} />
+        </div>
       </div>
-    </div>
+    </Wrapper>
   )
 }
 
