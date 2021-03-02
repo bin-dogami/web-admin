@@ -110,7 +110,7 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
         errorTitle: '探查是否有书在抓取中错误',
       }).then((res) => {
         const data = res && res.data && res.data.data
-        Modal.info({ title: typeof data === 'string' ? data : '我也不知道咋回事' })
+        Modal.info({ title: typeof data === 'string' ? (data || '没有书在抓取中') : '我也不知道咋回事' })
       })
     } catch (e) {
       console.log(e)
@@ -175,8 +175,8 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
         <div className="flex">
           <h2>最新抓取的小说list</h2>
           <div>
-            {/*  @TODO: 用完注释掉吧 */}
-            <Button onClick={onInitSpiderData}>初始化spider表数据</Button>
+            {/*  用完注释掉吧 */}
+            {/* <Button onClick={onInitSpiderData}>初始化spider表数据</Button> */}
             <Button onClick={onDetectIsSpidering}>是否有书在抓取中</Button>
             <Button onClick={onCancelIsSpidering}>取消所有抓取状态</Button>
             <Button onClick={onSpiderAll}>抓取所有书</Button>
