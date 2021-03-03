@@ -98,7 +98,7 @@ const Wrapper = styled.div`
   .list {
     line-height: 28px;
 
-    strong, span {
+    strong, span, a {
       display: inline-block;
     }
 
@@ -106,14 +106,23 @@ const Wrapper = styled.div`
       width: 150px;
     }
 
-    span {
+    span, a {
       min-width: 50px;
       margin-right: 30px;
       vertical-align: top;
 
       @media (min-width:1000px){
         width: 250px;
+        max-width: auto;
       }
+    }
+
+    a {
+      max-width: 200px;
+      text-overflow: ellipsis;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
     }
 
     .btn {
@@ -425,12 +434,13 @@ const FailedPages = () => {
                   <ModifyAction id={bookInfo.id} status={bookInfo.isRecommend} name={"setRecommend"} modifyFnName={onSetRecommend} />
                 </li>
                 <li>
-                  <strong>小说名: </strong><span>{bookInfo.title}</span>
+                  <strong>小说名: </strong>
+                  <a href={`http://m.zjjdxr.com/book/${bookInfo.id}`} target="_blank">{bookInfo.title}</a>
                   <ModifyAction id={bookInfo.id} defaultValue={bookInfo.title} name={"title"} modifyFnName={onModifyBook} />
                 </li>
                 <li>
                   <strong>来源: </strong>
-                  <span>{bookInfo.from}</span>
+                  <a href={bookInfo.from} target="_blank">{bookInfo.from}</a>
                   <span className="btn" onClick={onSpider(bookInfo.from)}>再次抓取</span>
                 </li>
                 <li><strong>访问量: </strong><span>{bookInfo.viewnum}</span></li>
