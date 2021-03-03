@@ -107,9 +107,13 @@ const Wrapper = styled.div`
     }
 
     span {
-      width: 250px;
+      min-width: 50px;
       margin-right: 30px;
       vertical-align: top;
+
+      @media (min-width:1000px){
+        width: 250px;
+      }
     }
 
     .btn {
@@ -146,6 +150,8 @@ const FailedPages = () => {
 
   const onSearchBook = id => {
     setBookValue(typeof id === 'number' ? `${id}` : bookValue)
+    const domNovel = document.querySelector('#novel')
+    domNovel && domNovel.scrollIntoView({ behavior: 'smooth' })
     try {
       setBookInfo(null)
       axios({
@@ -394,7 +400,7 @@ const FailedPages = () => {
       <GlobalStyle />
       <Menus name={'fieldsSetting'} />
       <Last100Books onSearchBook={onSearchBook} onSpider={onSpider} />
-      <div className="chunk">
+      <div className="chunk" id="novel">
         <h2>novel字段</h2>
         <div className="content">
           <div className="search">

@@ -14,12 +14,11 @@ const Wrapper = styled.div`
   .flex {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: top;
     margin-bottom: 20px;
 
     button {
-      margin-left: 15px;
-      margin-right: 0;
+      margin: 0 0 15px 15px;
     }
   }
 `
@@ -110,7 +109,15 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
         errorTitle: '探查是否有书在抓取中错误',
       }).then((res) => {
         const data = res && res.data && res.data.data
-        Modal.info({ title: typeof data === 'string' ? (data || '没有书在抓取中') : '我也不知道咋回事' })
+        const title = typeof data === 'string' ? (data || '没有书在抓取中') : '我也不知道咋回事'
+        Modal.info({
+          title, onOk: () => {
+            const match = title.match(/#(\d+)#/)
+            if (Array.isArray(match) && match.length > 1) {
+              onSearchBook(+match[1])
+            }
+          }
+        })
       })
     } catch (e) {
       console.log(e)
@@ -131,19 +138,19 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
     }
   }
 
-  const onInitSpiderData = () => {
-    try {
-      axios({
-        url: `${baseUrl}fixdata/initSpiderData`,
-        method: 'post',
-        errorTitle: '初始化spider数据错误',
-      }).then((res) => {
-        const data = res && res.data && res.data.data
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
+  // const onInitSpiderData = () => {
+  //   try {
+  //     axios({
+  //       url: `${baseUrl}fixdata/initSpiderData`,
+  //       method: 'post',
+  //       errorTitle: '初始化spider数据错误',
+  //     }).then((res) => {
+  //       const data = res && res.data && res.data.data
+  //     })
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  // }
 
   const onSpiderAll = () => {
     message.info('开始抓取全部书了')
@@ -154,7 +161,15 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
         errorTitle: '抓取全部书错误',
       }).then((res) => {
         const data = res && res.data && res.data.data
-        Modal.info({ title: typeof data === 'string' ? data : '我也不知道咋回事' })
+        const title = typeof data === 'string' ? data : '我也不知道咋回事'
+        Modal.info({
+          title, onOk: () => {
+            const match = title.match(/#(\d+)#/)
+            if (Array.isArray(match) && match.length > 1) {
+              onSearchBook(+match[1])
+            }
+          }
+        })
       })
     } catch (e) {
       console.log(e)
