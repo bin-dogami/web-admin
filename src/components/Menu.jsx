@@ -11,6 +11,9 @@ const Menus = ({ name }) => {
       <Menu.Item key="fieldsSetting">
         <a href="/fieldsSetting">字段更改</a>
       </Menu.Item>
+      <Menu.Item key="lastMenuLost">
+        <a href="/lastMenuLost">上一个目录丢失</a>
+      </Menu.Item>
       <Menu.Item key="repeatsMenu">
         <a href="/repeatsMenu">重复index</a>
       </Menu.Item>

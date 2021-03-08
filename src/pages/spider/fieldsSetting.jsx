@@ -13,10 +13,6 @@ const GlobalStyle = createGlobalStyle`
   .modifyField {
     padding: 8px;
     white-space: nowrap;
-    input {
-      margin-right: 15px;
-      width: 180px;
-    }
   }
   .historyList {
     white-space: nowrap;
@@ -67,7 +63,27 @@ const Wrapper = styled.div`
     font-size: 16px;
   }
 
-  .search { margin-bottom: 20px;
+  .search {
+    margin-bottom: 20px;
+  }
+
+  .searchedBookList {
+    background: #fff;
+    position: absolute;
+    left: 0px;
+    top: 31px;
+    width: 200px;
+    border: 1px solid #ddd;
+    list-style: none;
+    padding: 5px 15px;
+    max-height: 180px;
+    overflow-y: auto;
+
+    li {
+      line-height: 20px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
   }
 
   .ant-input-number, .ant-input-affix-wrapper {
@@ -106,6 +122,10 @@ const Wrapper = styled.div`
       width: 150px;
     }
 
+    .red {
+      color: red;
+    }
+
     span, a {
       min-width: 50px;
       margin-right: 30px;
@@ -139,6 +159,7 @@ const FailedPages = () => {
   const [bookValue, setBookValue] = useState('');
   const [bookInfo, setBookInfo] = useState(null)
   const [historyBooks, setHistoryBooks] = useState([])
+  const [searchedBookList, setSearchedBookList] = useState([])
 
   const _setHistoryBooks = (item) => {
     let _historyBooks = historyBooks.filter(({ id }) => id !== item.id)
@@ -153,9 +174,46 @@ const FailedPages = () => {
     historyBooks.length && localStorage.setItem(BOOK_SEARCH_HISTORY_KEY, JSON.stringify(historyBooks))
   }, [historyBooks])
 
-  const onChangeBookId = (value) => {
+  const getBookByName = (name) => {
+    if (!name.trim()) {
+      return
+    }
+    try {
+      axios({
+        url: `${baseUrl}fixdata/getBookByName`,
+        method: 'get',
+        params: {
+          name: name.trim()
+        },
+        errorTitle: '获取书本错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string') {
+          message.error(data)
+        }
+        if (Array.isArray(data)) {
+          setSearchedBookList(data)
+        } else {
+          setSearchedBookList([])
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onChangeBookId = (e) => {
+    const { value } = e.target;
+    !/^[\d\s]+$/.test(value) && getBookByName(value)
     setBookValue(value)
   }
+
+  useEffect(() => {
+    if (!bookValue.length) {
+      setSearchedBookList([])
+    }
+  }, [bookValue])
 
   const onSearchBook = id => {
     setBookValue(typeof id === 'number' ? `${id}` : bookValue)
@@ -192,6 +250,11 @@ const FailedPages = () => {
     } catch (e) {
       console.log(e)
     }
+  }
+
+  const _onSearchBook = id => {
+    setSearchedBookList([])
+    onSearchBook(id)
   }
 
   const onSelectHistoryBook = id => () => {
@@ -278,7 +341,123 @@ const FailedPages = () => {
       console.log(e)
     }
   }
+  // ----------------------------------------- 分割线 -----------------------------------------
+  // ----------------------------------------- 分割线 -----------------------------------------
+  // ----------------------------------------- 分割线 -----------------------------------------
+  // ----------------------------------------- 分割线 -----------------------------------------
 
+  // 目录处理
+  const [menuValue, setMenuValue] = useState('')
+  const [menuInfo, setMenuInfo] = useState(null)
+
+  const onChangeMenuId = e => {
+    const { value } = e.target
+    setMenuValue(value)
+  }
+
+  function onSearchMenu () {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/getMenuInfo`,
+        method: 'get',
+        params: {
+          id: menuValue
+        },
+        errorTitle: '获取目录错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (data && typeof data === 'object') {
+          let list = data
+          setMenuInfo(list)
+        } else {
+          setMenuInfo(null)
+          message.error(typeof data === 'string' ? data : '获取目录错误')
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onDeleteMenu = (id) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/deleteMenu`,
+        method: 'post',
+        data: {
+          id,
+        },
+        errorTitle: '删除错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string' && !data.length) {
+          message.success('删除成功')
+          onSearchMenu()
+        } else {
+          message.error(typeof data === 'string' && data.length ? data : '删除错误')
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onDeleteGtMenus = (id) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/batchDeleteGtMenu`,
+        method: 'post',
+        data: {
+          id,
+        },
+        errorTitle: '删除错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string' && !data.length) {
+          message.success('删除成功')
+          onSearchMenu()
+        } else {
+          message.error(typeof data === 'string' && data.length ? data : '删除错误')
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onModifyMenu = (id, fieldName, fieldValue) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/modifyMenuInfo`,
+        method: 'post',
+        data: {
+          id,
+          fieldName,
+          fieldValue
+        },
+        errorTitle: '修改错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string' && !data.length) {
+          message.success('修改成功')
+          onSearchMenu()
+        } else {
+          message.error(typeof data === 'string' && data.length ? data : '修改错误')
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  // ----------------------------------------- 分割线 -----------------------------------------
+  // ----------------------------------------- 分割线 -----------------------------------------
+  // ----------------------------------------- 分割线 -----------------------------------------
+  // ----------------------------------------- 分割线 -----------------------------------------
   // 作者
   const [authorValue, setAuthorValue] = useState('')
   const [authorInfo, setAuthorInfo] = useState(null)
@@ -414,8 +593,18 @@ const FailedPages = () => {
         <div className="content">
           <div className="search">
             <Form.Item label="查询">
-              <InputNumber value={bookValue} onChange={onChangeBookId} placeholder="输入id" />
+              <Input allowClear value={bookValue} onChange={onChangeBookId} placeholder="输入id" />
               <Button type="primary" onClick={onSearchBook} >查询</Button>
+              {!searchedBookList.length ? null : (
+                <ul className="searchedBookList">
+                  {searchedBookList.map((item) => {
+                    return (
+                      <li key={item.id} onClick={() => _onSearchBook(item.id)}>{item.title}</li>
+                    )
+                  })}
+                </ul>
+              )}
+
               <Tooltip title={htmlHistoryBooks} color="gold" placement="bottom" overlayStyle={{ maxWidth: 300 }}>
                 <span className="history">历史查找(<span onClick={onClearHistory(BOOK_SEARCH_HISTORY_KEY)}>清除</span>)</span>
               </Tooltip>
@@ -463,6 +652,46 @@ const FailedPages = () => {
                   <strong>完本且抓取完了: </strong><span>{bookInfo.isSpiderComplete ? '已抓取完' : '未完'}</span>
                   <ModifyAction id={bookInfo.id} name={"isSpiderComplete"} status={bookInfo.isSpiderComplete} modifyFnName={onModifyBook} />
                 </li>
+              </ul>
+            }
+          </div>
+        </div>
+      </div>
+      <div className="chunk">
+        <h2>目录处理</h2>
+        <div className="content">
+          <div className="search">
+            <Form.Item label="查询">
+              <Input allowClear value={menuValue} onChange={onChangeMenuId} placeholder="输入id" />
+              <Button type="primary" onClick={onSearchMenu} >查询</Button>
+            </Form.Item>
+          </div>
+          <div className="data authData">
+            {!menuInfo ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} /> :
+              <ul className="list">
+                <li>
+                  <strong>id: </strong>
+                  <span>{menuInfo.id}</span>
+                  <ModifyAction id={menuInfo.id} html="删除目录" name={"deleteMenu"} modifyFnName={onDeleteMenu} />
+                  <ModifyAction id={menuInfo.id} html="删除>=此目录id的目录" name={"deleteMenu"} modifyFnName={onDeleteGtMenus} />
+                </li>
+                <li><strong>书id: </strong><span onClick={() => onSearchBook(menuInfo.novelId)}>{menuInfo.novelId}</span></li>
+                <li>
+                  <strong>mname: </strong>
+                  <a href={`http://m.zjjdxr.com/page/${menuInfo.id}`} target="_blank">{menuInfo.mname}</a>
+                  <ModifyAction id={menuInfo.id} defaultValue={menuInfo.mname} name={"mname"} modifyFnName={onModifyMenu} />
+                </li>
+                <li>
+                  <strong>index: </strong>
+                  <span>{menuInfo.index}</span>
+                  <ModifyAction id={menuInfo.id} defaultValue={menuInfo.index} name={"index"} modifyFnName={onModifyMenu} />
+                </li>
+                <li><strong>moriginalname: </strong><span>{menuInfo.moriginalname}</span></li>
+                <li><strong>page缺失否: </strong><span className={menuInfo.page ? '' : 'red'}>{menuInfo.page ? '不缺失' : 'page内容缺失'}</span></li>
+                <li><strong>字数: </strong><span>{menuInfo.wordsnum}</span></li>
+                <li><strong>content: </strong><span>{menuInfo.content}</span></li>
+                <li><strong>错误类型: </strong><span>{menuInfo.ErrorType == '1' ? '目录插入失败' : '没错'}</span></li>
+                <li><strong>来源: </strong><a href={menuInfo.from} target="_blank">{menuInfo.from}</a></li>
               </ul>
             }
           </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { Button, Table, Modal, message } from 'antd';
+import { Button, Table, Modal, message, Select } from 'antd';
 import axios from '@/utils/axios';
 import { baseUrl, copyText } from '@/utils/index';
 import {
@@ -23,9 +23,29 @@ const Wrapper = styled.div`
   }
 `
 
+const booksType = [
+  {
+    label: '未完降序',
+    value: 1,
+  },
+  {
+    label: '未完升序',
+    value: 2,
+  },
+  {
+    label: '完本降序',
+    value: 3,
+  },
+  {
+    label: '完本升序',
+    value: 4,
+  }
+]
+
 const Last100Books = ({ onSearchBook, onSpider }) => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
+  const [order, setOrder] = useState(1)
 
   const onClick = id => {
     onSearchBook(id)
@@ -47,7 +67,7 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
       dataIndex: 'title',
       render: (title, record) => {
         return (
-          <a href={`http://m.zjjdxr.com/book/${record.id}`} target="_blank">{title} ${record.isComplete ? `（${record.isSpiderComplete ? '抓' : ''}完）` : ''}</a>
+          <a href={`http://m.zjjdxr.com/book/${record.id}`} target="_blank">{title} {record.isComplete ? `（${record.isSpiderComplete ? '抓' : ''}完）` : ''}</a>
         )
       }
     },
@@ -89,6 +109,9 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
       axios({
         url: `${baseUrl}fixdata/getLastBookList`,
         method: 'get',
+        params: {
+          order
+        },
         errorTitle: '获取书本错误',
       }).then((res) => {
         setLoading(false)
@@ -100,6 +123,10 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
       console.log(e)
     }
   }
+
+  useEffect(() => {
+    getList()
+  }, [order])
 
   const onDetectIsSpidering = () => {
     try {
@@ -192,6 +219,7 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
           <div>
             {/*  用完注释掉吧 */}
             {/* <Button onClick={onInitSpiderData}>初始化spider表数据</Button> */}
+            <Select options={booksType} value={order} onChange={value => setOrder(value)} style={{ width: '100px' }} />
             <Button onClick={onDetectIsSpidering}>在抓取?</Button>
             <Button onClick={onCancelIsSpidering}>中断抓取</Button>
             <Button onClick={onSpiderAll}>抓取all</Button>

@@ -14,8 +14,8 @@ const Wrapper = styled(Tooltip)`
     white-space: nowrap;
 
     input {
-      margin-right: 15px;
-      width: 180px;
+      margin-right: 0;
+      width: auto;
     }
   }
 `
@@ -39,7 +39,7 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
     }
   }
   let dom = null
-  if (name === 'deleteBook') {
+  if (['deleteMenu', 'deleteBook'].includes(name)) {
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >确认要删除</Button>
     )
@@ -55,10 +55,14 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, name, !status)} >{status ? '更改为#未抓取完成#' : '更改为#已抓取完成#'}</Button>
     )
+  } else if (name === 'deleteLastMenuLostError') {
+    dom = (
+      <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >这就改好了？</Button>
+    )
   } else {
     dom = (
       <>
-        <Input allowClear value={fieldValue} onChange={onChangeFieldValue} placeholder="输入值" />
+        <Input allowClear value={fieldValue} style={{ width: 'auto' }} onChange={onChangeFieldValue} placeholder="输入值" />
         <Button type="primary" onClick={onModifyFieldValue(id, name)} >更改</Button>
       </>
     )
