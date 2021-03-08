@@ -47,7 +47,7 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
       dataIndex: 'title',
       render: (title, record) => {
         return (
-          <a href={`http://m.zjjdxr.com/book/${record.id}`} target="_blank">{title}</a>
+          <a href={`http://m.zjjdxr.com/book/${record.id}`} target="_blank">{title} ${record.isComplete ? `（${record.isSpiderComplete ? '抓' : ''}完）` : ''}</a>
         )
       }
     },
@@ -192,9 +192,9 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
           <div>
             {/*  用完注释掉吧 */}
             {/* <Button onClick={onInitSpiderData}>初始化spider表数据</Button> */}
-            <Button onClick={onDetectIsSpidering}>是否有书在抓取中</Button>
-            <Button onClick={onCancelIsSpidering}>取消所有抓取状态</Button>
-            <Button onClick={onSpiderAll}>抓取所有书</Button>
+            <Button onClick={onDetectIsSpidering}>在抓取?</Button>
+            <Button onClick={onCancelIsSpidering}>中断抓取</Button>
+            <Button onClick={onSpiderAll}>抓取all</Button>
             <Button disabled={loading} onClick={() => getList()}><SyncOutlined spin={loading} /></Button>
           </div>
         </div>
