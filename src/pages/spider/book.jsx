@@ -44,18 +44,18 @@ const Book = () => {
   const [insertMPRes, setInsertMPRes] = useState('');
   const [lastPage, setLastPage] = useState('');
 
-  const onSpiderNewMenus = () => {
-    try {
-      // axios({
-      //   url: `${baseUrl}getbook/spiderBooksNewMenus`,
-      //   method: 'post',
-      //   data: {},
-      //   errorTitle: '所有书新章节抓取错误',
-      // })
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // const onSpiderNewMenus = () => {
+  //   try {
+  //     // axios({
+  //     //   url: `${baseUrl}getbook/spiderBooksNewMenus`,
+  //     //   method: 'post',
+  //     //   data: {},
+  //     //   errorTitle: '所有书新章节抓取错误',
+  //     // })
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   const onSearch = isSpider => () => {
     try {
@@ -118,7 +118,7 @@ const Book = () => {
           label="获取书信息"
           name="url"
         >
-          <Input allowClear />
+          <Input allowClear style={{ maxWidth: '400px' }} onFocus={e => e.target.select()} />
         </Form.Item>
       </Form>
       <div className="flex">
@@ -126,9 +126,9 @@ const Book = () => {
           <Button type="primary" onClick={onSearch(false)} style={{ marginRight: '30px' }}>
             查询
           </Button>
-          <Button type="primary" onClick={onSpiderNewMenus} style={{ marginRight: '30px' }}>
+          {/* <Button type="primary" onClick={onSpiderNewMenus} style={{ marginRight: '30px' }}>
             所有书新章节抓取
-          </Button>
+          </Button> */}
           <Button type="primary" onClick={onSearch(true)} style={{ marginRight: '30px' }}>
             抓取书信息及目录信息
           </Button>

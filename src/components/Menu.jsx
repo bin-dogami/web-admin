@@ -23,6 +23,9 @@ const Menus = ({ name }) => {
       <Menu.Item key="tumorClear">
         <a href="/tumorClear">内容清理器</a>
       </Menu.Item>
+      <Menu.Item key="fragmentFunctions">
+        <a href="/fragmentFunctions">零碎功能</a>
+      </Menu.Item>
     </Menu>
   )
 }
