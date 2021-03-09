@@ -1,4 +1,5 @@
-const productionHost = 'http://data1.zjjdxr.com/';
+// const productionHost = 'http://m.zjjdxr.com/';
+const productionHost = '/';
 export const isDev = process.env.NODE_ENV === 'development';
 export const baseUrl = isDev ? 'http://localhost:3001/' : productionHost;
 
