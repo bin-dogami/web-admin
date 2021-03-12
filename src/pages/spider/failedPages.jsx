@@ -25,6 +25,7 @@ const FailedPages = () => {
         method: 'get',
         params: {
           id,
+          isSingleReget: 1
         },
         errorTitle: '抓取错误',
       }).then((res) => {
