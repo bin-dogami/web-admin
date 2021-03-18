@@ -154,7 +154,7 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
   const onCancelIsSpidering = () => {
     try {
       axios({
-        url: `${baseUrl}getbook/setAllStopSpidering`,
+        url: `${baseUrl}getbook/setCurrentSpideringStop`,
         method: 'post',
         errorTitle: '取消所有抓取状态错误',
       }).then((res) => {

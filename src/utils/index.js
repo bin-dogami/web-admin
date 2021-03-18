@@ -10,7 +10,6 @@ export const getHost = (url) => {
   return url.replace(/https?:\/\//, '').replace(/\/.*/, '')
 }
 
-
 export const copyText = (value) => {
   const input = document.createElement('input');
   input.setAttribute('readonly', 'readonly');
