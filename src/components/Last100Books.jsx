@@ -52,6 +52,30 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
     copyText(id)
   }
 
+  const onCompleteMenusAll = (id) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/setBookSpiderComplete`,
+        method: 'post',
+        data: {
+          id
+        },
+        errorTitle: '设置全本及抓取完毕操作错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'string') {
+          if (data === '') {
+            message.success('设置成功')
+          } else {
+            message.error(data)
+          }
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   const columns = [
     {
       title: '小说ID',
@@ -93,7 +117,8 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
       render: (text, record) => {
         return (
           <>
-            <span onClick={onSpider(record.from)} style={{ marginLeft: 15 }}>再次抓取</span>
+            <a onClick={onCompleteMenusAll(record.id)}>全本且抓完了</a>
+            <a onClick={onSpider(record.from)} style={{ marginLeft: 20 }}>再次抓取</a>
           </>
         )
       }
@@ -164,20 +189,6 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
       console.log(e)
     }
   }
-
-  // const onInitSpiderData = () => {
-  //   try {
-  //     axios({
-  //       url: `${baseUrl}fixdata/initSpiderData`,
-  //       method: 'post',
-  //       errorTitle: '初始化spider数据错误',
-  //     }).then((res) => {
-  //       const data = res && res.data && res.data.data
-  //     })
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // }
 
   const onSpiderAll = () => {
     message.info('开始抓取全部书了')

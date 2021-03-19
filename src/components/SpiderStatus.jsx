@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { Button, Modal, Table, Select, Radio } from 'antd';
+import { Button, Modal, Table, Select, Radio, message } from 'antd';
 import axios from '@/utils/axios';
 import { baseUrl } from '@/utils/index';
 
@@ -15,9 +15,42 @@ const SpiderStatus = () => {
   const [statusList2, setStatusList2] = useState([]);
   const [data, setData] = useState([]);
 
-  console.log(status, statusList)
+  const viewTotalBooks = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/viewTotalBooks`,
+        method: 'get',
+        errorTitle: '获取错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'string') {
+          message.info(data)
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
-  const onChangeStatus = id => status => {
+  const viewTotalMenus = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/viewTotalMenus`,
+        method: 'get',
+        errorTitle: '获取错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'string') {
+          message.info(data)
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onChangeStatus = id => e => {
+    const status = e.target.value
     axios({
       url: `${baseUrl}fixdata/changeSpiderStatus`,
       method: 'post',
@@ -27,13 +60,31 @@ const SpiderStatus = () => {
       },
       errorTitle: '删除错误',
     }).then((res) => {
-      const data = res && res.data && res.data.data
-      if (typeof data === 'string') {
-        if (data === '') {
-          getList()
-          return
+      const result = res && res.data && res.data.data
+      if (typeof result === 'string') {
+        if (result === '') {
+          const _data = JSON.parse(JSON.stringify(data))
+          let _index = -1
+          for (var index in _data) {
+            if (_data[index].id === id) {
+              _index = index
+              break
+            }
+          }
+          const item = _data[_index]
+          const filter = statusList.filter(({ value }) => value == status)
+          const statusText = filter.length ? filter[0].label : '出错了吧'
+          const newItem = {}
+          Object.assign(newItem, item, {
+            status,
+            statusText
+          })
+          _data[_index] = newItem
+          setData(_data)
+          message.success('设置成功')
+        } else {
+          message.success(result)
         }
-        Modal.info({ content: data })
       }
     })
   }
@@ -65,8 +116,20 @@ const SpiderStatus = () => {
       title: '更改状态',
       dataIndex: 'statusText',
       render: (text, record, index) => {
+        const _statusList = JSON.parse(JSON.stringify(statusList))
+        _statusList.pop()
+        _statusList.forEach((item) => {
+          item.disabled = item.id == record.id
+        })
         return (
-          <Select style={{ width: 100 }} value={record.status} options={statusList} onChange={onChangeStatus(record.id)} />
+          <Radio.Group
+            options={_statusList}
+            onChange={onChangeStatus(record.id)}
+            value={record.status}
+            optionType="button"
+            buttonStyle="solid"
+            size="small"
+          />
         )
       }
     },
@@ -133,7 +196,11 @@ const SpiderStatus = () => {
 
   return (
     <div className="chunk" style={{ minHeight: 30 }}>
-      <h2><Button type="primary" shape="round" size={'small'} onClick={() => setPopVisible(true)}>抓取状态</Button></h2>
+      <div>
+        <Button type="primary" size={'middle'} onClick={() => setPopVisible(true)} style={{ marginRight: 20 }}>查看抓取状态</Button>
+        <Button type="primary" size={'middle'} onClick={viewTotalBooks} style={{ marginRight: 20 }}>查看书本总数</Button>
+        <Button type="primary" size={'middle'} onClick={viewTotalMenus} style={{ marginRight: 20 }}>查看目录总数</Button>
+      </div>
       <Modal width={800} title="抓取状态列表" visible={popVisible} onOk={() => setPopVisible(false)} onCancel={() => setPopVisible(false)}>
         <Radio.Group
           options={statusList2}
