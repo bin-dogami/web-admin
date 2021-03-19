@@ -8,6 +8,7 @@ import { baseUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY, copyText }
 import Menus from '@/components/Menu.jsx'
 import ModifyAction from '@/components/ModifyAction.jsx'
 import Last100Books from '@/components/Last100Books.jsx'
+import SpiderStatus from '@/components/SpiderStatus.jsx'
 
 const GlobalStyle = createGlobalStyle`
   .modifyField {
@@ -587,6 +588,7 @@ const FailedPages = () => {
     <Wrapper className="wrapper">
       <GlobalStyle />
       <Menus name={'fieldsSetting'} />
+      <SpiderStatus />
       <Last100Books onSearchBook={onSearchBook} onSpider={onSpider} />
       <div className="chunk" id="novel">
         <h2>novel字段</h2>
