@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { Button, Table, Modal, message, Select } from 'antd';
 import axios from '@/utils/axios';
-import { baseUrl, copyText } from '@/utils/index';
+import { baseUrl, scanUrl, copyText, onCopyHref } from '@/utils/index';
 import {
   SyncOutlined,
 } from '@ant-design/icons';
@@ -91,7 +91,7 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
       dataIndex: 'title',
       render: (title, record) => {
         return (
-          <a href={`http://m.zjjdxr.com/book/${record.id}`} target="_blank">{title} {record.isComplete ? `（${record.isSpiderComplete ? '抓' : ''}完）` : ''}</a>
+          <a href={`${scanUrl}book/${record.id}`} target="_blank">{title} {record.isComplete ? `（${record.isSpiderComplete ? '抓' : ''}完）` : ''}</a>
         )
       }
     },
@@ -105,8 +105,7 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
       render: (from, record) => {
         return (
           <>
-            <a href={from} target="_blank">看看</a>
-            <span onClick={e => copyText(e.target.previousElementSibling.getAttribute('href'))} style={{ marginLeft: 15 }}>复制链接</span>
+            <a data-href={from} onClick={onCopyHref} style={{ marginLeft: 15 }}>复制链接</a>
           </>
         )
       }

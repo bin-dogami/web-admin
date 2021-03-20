@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { Button, Modal, Table, Select, Radio, message } from 'antd';
 import axios from '@/utils/axios';
-import { baseUrl } from '@/utils/index';
+import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
 
 const all = {
   label: '全部',
@@ -99,7 +99,7 @@ const SpiderStatus = () => {
       dataIndex: 'title',
       render: (title, record) => {
         return (
-          <a href={`http://m.zjjdxr.com/book/${record.id}`} target="_blank">{title}</a>
+          <a href={`${scanUrl}book/${record.id}`} target="_blank">{title}</a>
         )
       }
     },
@@ -197,9 +197,9 @@ const SpiderStatus = () => {
   return (
     <div className="chunk" style={{ minHeight: 30 }}>
       <div>
-        <Button type="primary" size={'middle'} onClick={() => setPopVisible(true)} style={{ marginRight: 20 }}>查看抓取状态</Button>
-        <Button type="primary" size={'middle'} onClick={viewTotalBooks} style={{ marginRight: 20 }}>查看书本总数</Button>
-        <Button type="primary" size={'middle'} onClick={viewTotalMenus} style={{ marginRight: 20 }}>查看目录总数</Button>
+        <Button type="primary" size={'middle'} onClick={() => setPopVisible(true)} style={{ marginRight: 15 }}>抓取状态</Button>
+        <Button type="primary" size={'middle'} onClick={viewTotalBooks} style={{ marginRight: 15 }}>书本总数</Button>
+        <Button type="primary" size={'middle'} onClick={viewTotalMenus}>目录总数</Button>
       </div>
       <Modal width={800} title="抓取状态列表" visible={popVisible} onOk={() => setPopVisible(false)} onCancel={() => setPopVisible(false)}>
         <Radio.Group

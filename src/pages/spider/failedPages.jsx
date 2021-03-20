@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Tooltip, message } from 'antd';
 import styled from 'styled-components';
 import axios from '@/utils/axios';
-import { baseUrl } from '@/utils/index';
+import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
 
 import Menus from '@/components/Menu.jsx'
 
@@ -76,7 +76,7 @@ const FailedPages = () => {
       dataIndex: 'title',
       render: (title, record) => {
         return (
-          <a href={`http://m.zjjdxr.com/book/${record.id}`} target="_blank">{title}</a>
+          <a href={`${scanUrl}book/${record.id}`} target="_blank">{title}</a>
         )
       }
     },

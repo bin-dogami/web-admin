@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { Input, Button, Tooltip } from 'antd';
+import { FormOutlined } from '@ant-design/icons';
 import styled, { createGlobalStyle } from 'styled-components';
 
 const Wrapper = styled(Tooltip)`
@@ -59,6 +60,10 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >这就改好了？</Button>
     )
+  } else if (name === 'batchModifyIndexs') {
+    dom = (
+      <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >确定要重排此目录之后的所有目录的index？</Button>
+    )
   } else {
     dom = (
       <>
@@ -75,8 +80,8 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
   )
 
   return (
-    <Wrapper title={htmlModifyBookField} placement="right" onVisibleChange={onVisibleChange} trigger="click" overlayStyle={{ maxWidth: 300 }}>
-      <span className="btn">{html || '修改'}</span>
+    <Wrapper title={htmlModifyBookField} placement="right" onVisibleChange={onVisibleChange} trigger="click" overlayStyle={{ maxWidth: 400 }}>
+      <span className="btn">{html || <FormOutlined />}</span>
     </Wrapper>
   )
 }

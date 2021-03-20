@@ -3,12 +3,13 @@ import { Form, Input, InputNumber, Button, message, Modal, Empty, Tooltip, Table
 
 import styled, { createGlobalStyle } from 'styled-components';
 import axios from '@/utils/axios';
-import { baseUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY, copyText } from '@/utils/index';
+import { baseUrl, scanUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY, onCopyHref } from '@/utils/index';
 
 import Menus from '@/components/Menu.jsx'
 import ModifyAction from '@/components/ModifyAction.jsx'
 import Last100Books from '@/components/Last100Books.jsx'
 import SpiderStatus from '@/components/SpiderStatus.jsx'
+import MenuList from '@/components/MenuList.jsx'
 
 const GlobalStyle = createGlobalStyle`
   .modifyField {
@@ -136,6 +137,17 @@ const Wrapper = styled.div`
         width: 250px;
         max-width: auto;
       }
+    }
+
+    .viewMenus span {
+      min-width: auto;
+      width: auto;
+      margin-right: 0;
+    }
+
+    .anticon {
+      line-height: 30px;
+      min-width: 0;
     }
 
     a {
@@ -356,13 +368,13 @@ const FailedPages = () => {
     setMenuValue(value)
   }
 
-  function onSearchMenu () {
+  function onSearchMenu (v) {
     try {
       axios({
         url: `${baseUrl}fixdata/getMenuInfo`,
         method: 'get',
         params: {
-          id: menuValue
+          id: menuValue || v
         },
         errorTitle: '获取目录错误',
       }).then((res) => {
@@ -618,6 +630,7 @@ const FailedPages = () => {
                 <li>
                   <strong>小说Id: </strong><span>{bookInfo.id}</span>
                   <ModifyAction id={bookInfo.id} html="删除本书" name={"deleteBook"} modifyFnName={onDeleteBook} />
+                  <MenuList book={bookInfo} />
                 </li>
                 <li>
                   <strong>是否热门推荐: </strong>
@@ -626,12 +639,12 @@ const FailedPages = () => {
                 </li>
                 <li>
                   <strong>小说名: </strong>
-                  <a href={`http://m.zjjdxr.com/book/${bookInfo.id}`} target="_blank">{bookInfo.title}</a>
+                  <a href={`${scanUrl}book/${bookInfo.id}`} target="_blank">{bookInfo.title}</a>
                   <ModifyAction id={bookInfo.id} defaultValue={bookInfo.title} name={"title"} modifyFnName={onModifyBook} />
                 </li>
                 <li>
                   <strong>来源: </strong>
-                  <a href={bookInfo.from} target="_blank">{bookInfo.from}</a>
+                  <a data-href={bookInfo.from} onClick={onCopyHref}>{bookInfo.from}</a>
                   <span className="btn" onClick={onSpider(bookInfo.from)}>再次抓取</span>
                 </li>
                 <li><strong>访问量: </strong><span>{bookInfo.viewnum}</span></li>
@@ -680,7 +693,7 @@ const FailedPages = () => {
                 <li><strong>书id: </strong><span onClick={() => onSearchBook(menuInfo.novelId)}>{menuInfo.novelId}</span></li>
                 <li>
                   <strong>mname: </strong>
-                  <a href={`http://m.zjjdxr.com/page/${menuInfo.id}`} target="_blank">{menuInfo.mname}</a>
+                  <a href={`${scanUrl}page/${menuInfo.id}`} target="_blank">{menuInfo.mname}</a>
                   <ModifyAction id={menuInfo.id} defaultValue={menuInfo.mname} name={"mname"} modifyFnName={onModifyMenu} />
                 </li>
                 <li>
@@ -693,7 +706,7 @@ const FailedPages = () => {
                 <li><strong>字数: </strong><span>{menuInfo.wordsnum}</span></li>
                 <li><strong>content: </strong><span>{menuInfo.content}</span></li>
                 <li><strong>错误类型: </strong><span>{menuInfo.ErrorType == '1' ? '目录插入失败' : '没错'}</span></li>
-                <li><strong>来源: </strong><a href={menuInfo.from} target="_blank">{menuInfo.from}</a></li>
+                <li><strong>来源: </strong><a data-href={menuInfo.from} onClick={onCopyHref}>{menuInfo.from}</a></li>
               </ul>
             }
           </div>
