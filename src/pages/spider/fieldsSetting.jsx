@@ -133,10 +133,10 @@ const Wrapper = styled.div`
       margin-right: 30px;
       vertical-align: top;
 
-      @media (min-width:1000px){
-        width: 250px;
-        max-width: auto;
-      }
+      // @media (min-width:1000px){
+      //   width: 250px;
+      //   max-width: auto;
+      // }
     }
 
     .viewMenus span {
@@ -589,7 +589,10 @@ const FailedPages = () => {
         },
         errorTitle: '抓取错误',
       }).then((res) => {
-        //
+        const data = res && res.data && res.data.data || ''
+        if (typeof data === 'object' && '抓取失败' in data) {
+          message.error(data['抓取失败'])
+        }
       })
     } catch (error) {
       console.log(error)

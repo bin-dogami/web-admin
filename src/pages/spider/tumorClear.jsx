@@ -3,6 +3,7 @@ import { Form, Radio, Input, Table, Button, message, Tooltip, Modal } from 'antd
 import styled from 'styled-components';
 import axios from '@/utils/axios';
 import { baseUrl, getHost } from '@/utils/index';
+import ModifyAction from '@/components/ModifyAction.jsx'
 
 import Menus from '@/components/Menu.jsx'
 
@@ -27,13 +28,16 @@ const Wrapper = styled.div`
 `;
 
 const TumorClear = () => {
+  const [useFix, setUseFix] = useState(1)
   const [types, setTypes] = useState([])
   const [host, setHost] = useState('')
   const [list, setList] = useState(null)
   const [type, setType] = useState('')
   const [text, setText] = useState('')
   const [url, setUrl] = useState('')
+  const [addUseFix, setAddUseFix] = useState(0)
   const [isModalVisible, setIsModalVisible] = useState(false);
+
   const onShowCreate = () => {
     setIsModalVisible(true);
   };
@@ -47,6 +51,7 @@ const TumorClear = () => {
           type,
           text: text.trim(),
           host: getHost(url).trim(),
+          useFix: addUseFix
         },
         errorTitle: '获取list错误',
       }).then((res) => {
@@ -55,7 +60,7 @@ const TumorClear = () => {
           message.error(data)
         } else {
           message.success('添加成功')
-          onSearch()
+          onSearch(addUseFix)
         }
       })
 
@@ -64,17 +69,20 @@ const TumorClear = () => {
     }
     setIsModalVisible(false);
   };
+
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
-  const onSearch = () => {
+  const onSearch = (useFix) => {
+    setUseFix(useFix)
     try {
       setList(null)
       axios({
         url: `${baseUrl}fixdata/getTumorList`,
         method: 'get',
         params: {
+          useFix,
           host: getHost(host),
         },
         errorTitle: '获取list错误',
@@ -111,10 +119,32 @@ const TumorClear = () => {
           message.error(data)
         } else {
           message.success('删除成功')
-          onSearch()
+          onSearch(useFix)
         }
       })
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
+  const onFixPagesContent = (text, name, novelId) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/fixPagesContent`,
+        method: 'Post',
+        data: {
+          text,
+          id: novelId,
+        },
+        errorTitle: '修复错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (data === '') {
+          message.success('修复成功')
+        } else {
+          message.error(typeof data === 'string' ? data : '有未知错误')
+        }
+      })
     } catch (e) {
       console.log(e)
     }
@@ -128,6 +158,7 @@ const TumorClear = () => {
     {
       title: '类型',
       dataIndex: 'type',
+      width: 180,
       render: (type, record) => {
         const _t = types.filter(({ value }) => value === type)
         return type.length ? (_t.length ? _t[0].label : '类型列表没获取到') : '没有类型，数据有问题'
@@ -145,18 +176,24 @@ const TumorClear = () => {
     {
       title: '操作',
       dataIndex: 'handler',
+      width: 160,
       render: (text, record) => {
         return (
           <>
             <Tooltip title={<Button type="primary" onClick={onDelete(record.id)} >删除</Button>} placement="right" trigger="click">
-              <a style={{ whiteSpace: 'nowrap' }}>删除</a>
+              <a style={{ display: 'inline-block', marginRight: 15 }}>删除</a>
             </Tooltip>
+            {/* 暂时只支持文本直接替换的 */}
+            {useFix && record.type === 'just_replace' ? (
+              <span style={{ color: '#1890ff', cursor: 'pointer' }}>
+                <ModifyAction id={record.text} html="修复章节内容" name={"fixPagesContent"} modifyFnName={onFixPagesContent} />
+              </span>
+            ) : null}
           </>
         )
       }
     },
   ];
-
 
   const onGetTypes = () => {
     try {
@@ -182,12 +219,32 @@ const TumorClear = () => {
     }
   }
   useEffect(() => {
-    onSearch()
     onGetTypes()
   }, [])
 
+  useEffect(() => {
+    onSearch(useFix)
+    setAddUseFix(useFix)
+  }, [useFix])
+
   const rowKey = (record) => {
     return record.id
+  }
+
+  const options = [
+    {
+      label: '修复的时候用',
+      value: 1
+    },
+    {
+      label: '抓取的时候用',
+      value: 0
+    },
+  ]
+
+  const onChange = (e) => {
+    const value = e.target.value
+    setUseFix(value)
   }
 
   return (
@@ -199,6 +256,14 @@ const TumorClear = () => {
           <Input allowClear value={host} onChange={e => setHost(e.target.value)} style={{ marginBottom: 20 }} placeholder="输入url" />
           <Button type="primary" onClick={onSearch} >查询</Button>
           <Button type="primary" onClick={onShowCreate} >添加</Button>
+          <Radio.Group
+            options={options}
+            onChange={onChange}
+            value={useFix}
+            optionType="button"
+            buttonStyle="solid"
+            style={{ marginLeft: 20 }}
+          />
         </Form.Item>
       </div>
       <Table dataSource={list} columns={columns} rowKey={rowKey} pagination={{ pageSize: 100 }} />
@@ -211,6 +276,16 @@ const TumorClear = () => {
         </Form.Item>
         <Form.Item label="url">
           <Input allowClear value={url} onChange={e => setUrl(e.target.value)} placeholder="输入url" />
+        </Form.Item>
+        <Form.Item label="是否用于修复">
+          <Radio.Group
+            options={options}
+            onChange={e => setAddUseFix(e.target.value)}
+            value={addUseFix}
+            optionType="button"
+            buttonStyle="solid"
+            style={{ marginLeft: 20 }}
+          />
         </Form.Item>
       </Modal>
     </Wrapper>

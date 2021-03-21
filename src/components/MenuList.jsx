@@ -1,18 +1,37 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { Button, Modal, Table, message, Radio } from 'antd';
-import { SortAscendingOutlined } from '@ant-design/icons';
+import { SortAscendingOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from '@/utils/axios';
 import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
 import ModifyAction from '@/components/ModifyAction.jsx'
+import styled, { createGlobalStyle } from 'styled-components';
+
+const AbNormals = styled.div`
+  margin-bottom: 20px;
+
+  ul {
+  }
+
+  li {
+    line-height: 30px;
+
+    span {
+      padding-right: 20px;
+      min-width: 40%;
+      display: inline-block;
+    }
+  }
+`
 
 const MenuList = ({ book }) => {
   const [popVisible, setPopVisible] = useState(false)
-  const [isDesc, setIsDesc] = useState(true)
+  const [isDesc, setIsDesc] = useState(false)
   const [skip, setSkip] = useState(1)
-  const [size, setSize] = useState(20)
+  const [size, setSize] = useState(100)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([])
+  const [abNormalIndexs, setAbNormalIndexs] = useState([])
 
   const onModifyMenu = (id, fieldName, fieldValue) => () => {
     try {
@@ -40,6 +59,30 @@ const MenuList = ({ book }) => {
     }
   }
 
+  const onDeleteMenu = (id) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/deleteMenu`,
+        method: 'post',
+        data: {
+          id,
+        },
+        errorTitle: '删除错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string' && !data.length) {
+          message.success('删除成功')
+          getList(skip, size, isDesc)
+        } else {
+          message.error(typeof data === 'string' && data.length ? data : '删除错误')
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   // 重排此目录之后的所有目录的index
   const batchModifyIndexs = (mId, fieldName, fieldValue) => () => {
     try {
@@ -58,6 +101,30 @@ const MenuList = ({ book }) => {
           getList(skip, size, isDesc)
         } else {
           message.error(typeof data === 'string' && data.length ? data : '修改错误')
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onDetectIndexAbnormal = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/detectBookIndexAbnormal`,
+        method: 'get',
+        params: {
+          id: book.id,
+        },
+        errorTitle: '探查错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string' && !data.length) {
+          message.success('没有问题')
+        } else {
+          message.error(typeof data === 'string' && data.length ? data : '有错误哦')
+          Array.isArray(data) && setAbNormalIndexs(data)
         }
       })
 
@@ -107,6 +174,14 @@ const MenuList = ({ book }) => {
     {
       title: '目录ID',
       dataIndex: 'id',
+      render: (id, record) => {
+        return (
+          <>
+            <a href={`${scanUrl}page/${record.id}`} target="_blank" style={{ marginRight: 10 }}>{id}</a>
+            <ModifyAction id={id} html="删除目录" name={"deleteMenu"} modifyFnName={onDeleteMenu} html={<DeleteOutlined />} />
+          </>
+        )
+      }
     },
     {
       title: 'mname',
@@ -184,8 +259,19 @@ const MenuList = ({ book }) => {
             <Radio value={true}>倒序</Radio>
             <Radio value={false}>正序</Radio>
           </Radio.Group>
+          <Button type="primary" size={'middle'} onClick={onDetectIndexAbnormal} style={{ marginRight: 20 }}>index是否异常</Button>
           <a data-href={book.from} onClick={onCopyHref}>{book.title}</a>
         </div>
+        {abNormalIndexs.length ? (
+          <AbNormals>
+            <h3>有问题的index目录: </h3>
+            <ul>
+              {abNormalIndexs.map(({ id, index, mname, lastId, lastIndex, lastMname, }) => (
+                <li key={id}><span>第{index}章 {mname} 【{id}】</span> (上一章：{lastIndex} {lastMname} 【{lastId}】)</li>
+              ))}
+            </ul>
+          </AbNormals>
+        ) : null}
         <Table dataSource={data} size={'small'} pagination={pagination} onChange={onTableChange} loading={loading} columns={columns} rowKey={rowKey} />
       </Modal>
     </>

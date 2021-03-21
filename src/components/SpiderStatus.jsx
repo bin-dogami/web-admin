@@ -199,7 +199,8 @@ const SpiderStatus = () => {
       <div>
         <Button type="primary" size={'middle'} onClick={() => setPopVisible(true)} style={{ marginRight: 15 }}>抓取状态</Button>
         <Button type="primary" size={'middle'} onClick={viewTotalBooks} style={{ marginRight: 15 }}>书本总数</Button>
-        <Button type="primary" size={'middle'} onClick={viewTotalMenus}>目录总数</Button>
+        <Button type="primary" size={'middle'} onClick={viewTotalMenus} style={{ marginRight: 15 }}>目录总数</Button>
+        <Button type="primary" size={'middle'} onClick={() => message.info('功能待开发')}>探查index异常的书</Button>
       </div>
       <Modal width={800} title="抓取状态列表" visible={popVisible} onOk={() => setPopVisible(false)} onCancel={() => setPopVisible(false)}>
         <Radio.Group

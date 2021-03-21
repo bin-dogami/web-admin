@@ -5,8 +5,8 @@ import { baseUrl, scanUrl, copyText, onCopyHref } from '@/utils/index';
 import {
   SyncOutlined,
 } from '@ant-design/icons';
-
 import styled, { createGlobalStyle } from 'styled-components';
+
 const Wrapper = styled.div`
   .chunk h2 {
     margin-bottom: 0;
@@ -47,11 +47,6 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
   const [loading, setLoading] = useState(false)
   const [order, setOrder] = useState(1)
 
-  const onClick = id => {
-    onSearchBook(id)
-    copyText(id)
-  }
-
   const onCompleteMenusAll = (id) => () => {
     try {
       axios({
@@ -82,7 +77,10 @@ const Last100Books = ({ onSearchBook, onSpider }) => {
       dataIndex: 'id',
       render: (id, record) => {
         return (
-          <span onClick={() => onClick(id)}>{id}</span>
+          <>
+            <span style={{ marginRight: 10 }} onClick={() => onSearchBook(id)}>{id}</span>
+            <a onClick={() => copyText(id)}>复制</a>
+          </>
         )
       }
     },

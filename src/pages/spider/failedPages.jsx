@@ -8,8 +8,8 @@ import Menus from '@/components/Menu.jsx'
 
 const Wrapper = styled.div`
 
-  h2 {
-    margin-bottom: 30px;
+  h3 {
+    margin: 0 0 30px 20px;
   }
 `;
 
@@ -127,9 +127,8 @@ const FailedPages = () => {
   }
 
   return (
-    <Wrapper className="wrapper">
-      <Menus name={'failedPages'} />
-      <h2>抓取失败列表</h2>
+    <Wrapper>
+      <h3>抓取失败列表</h3>
       <Table dataSource={data} columns={columns} rowKey={rowKey} />
     </Wrapper>
   );

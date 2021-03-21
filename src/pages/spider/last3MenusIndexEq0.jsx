@@ -3,6 +3,8 @@ import { Table, Tooltip, message } from 'antd';
 import styled from 'styled-components';
 import axios from '@/utils/axios';
 import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
+
+import Menus from '@/components/Menu.jsx'
 import ModifyAction from '@/components/ModifyAction.jsx'
 
 const Wrapper = styled.div`
@@ -11,7 +13,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const LastMenuLost = () => {
+const Last3MenusIndexEq0 = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +24,7 @@ const LastMenuLost = () => {
         url: `${baseUrl}fixdata/getErrorsByType`,
         method: 'get',
         params: {
-          type: 'cannot_find_last_menu'
+          type: 'last_3menus_index_eq0'
         },
         errorTitle: '抓取错误',
       }).then((res) => {
@@ -100,10 +102,10 @@ const LastMenuLost = () => {
 
   return (
     <Wrapper>
-      <h3>上一次抓取的最后的目录这次抓取不到了</h3>
+      <h3>最后三章index为0，需要处理后才能正常抓取</h3>
       <Table dataSource={data} columns={columns} loading={loading} rowKey={rowKey} />
     </Wrapper>
   );
 };
 
-export default LastMenuLost;
+export default Last3MenusIndexEq0;

@@ -30,15 +30,17 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
   const onVisibleChange = (visible) => {
     !visible && setFieldValue('')
   }
+  // value 不传就用 fieldValue，所以一般不需要传
   const onModifyFieldValue = (id, field, value) => () => {
     if (value !== undefined) {
       modifyFnName(id, field, value)()
-      return;
-    }
-    if (fieldValue.trim().length) {
-      modifyFnName(id, field, fieldValue)()
+    } else {
+      if (fieldValue.trim().length) {
+        modifyFnName(id, field, fieldValue)()
+      }
     }
   }
+
   let dom = null
   if (['deleteMenu', 'deleteBook'].includes(name)) {
     dom = (
@@ -56,13 +58,20 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, name, !status)} >{status ? '更改为#未抓取完成#' : '更改为#已抓取完成#'}</Button>
     )
-  } else if (name === 'deleteLastMenuLostError') {
+  } else if (name === 'deleteErrorData') {
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >这就改好了？</Button>
     )
   } else if (name === 'batchModifyIndexs') {
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >确定要重排此目录之后的所有目录的index？</Button>
+    )
+  } else if (name === 'fixPagesContent') {
+    dom = (
+      <>
+        <Input allowClear value={fieldValue} style={{ width: 'auto' }} onChange={onChangeFieldValue} placeholder="输入书本id" />
+        <Button type="primary" onClick={onModifyFieldValue(id)} >确定要修复这本书的所有章节内容？</Button>
+      </>
     )
   } else {
     dom = (
@@ -80,7 +89,7 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
   )
 
   return (
-    <Wrapper title={htmlModifyBookField} placement="right" onVisibleChange={onVisibleChange} trigger="click" overlayStyle={{ maxWidth: 400 }}>
+    <Wrapper title={htmlModifyBookField} placement="right" onVisibleChange={onVisibleChange} trigger="click" overlayStyle={{ maxWidth: 500 }}>
       <span className="btn">{html || <FormOutlined />}</span>
     </Wrapper>
   )
