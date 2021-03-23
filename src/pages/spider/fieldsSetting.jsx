@@ -606,7 +606,7 @@ const FailedPages = () => {
       <GlobalStyle />
       <Menus name={'fieldsSetting'} />
       <GetDatas />
-      <SpiderStatus />
+      <SpiderStatus onSearchBook={onSearchBook} />
       <BookList onSearchBook={onSearchBook} setBookInfo={setBookInfo} onSpider={onSpider} menusPopVisible={menusPopVisible} setMenusPopVisible={setMenusPopVisible} />
       <MenuList book={bookInfo} visible={menusPopVisible} setVisible={setMenusPopVisible} />
       <div className="chunk" id="novel">

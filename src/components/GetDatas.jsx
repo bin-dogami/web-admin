@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { Button, Modal, Table, Select, Radio, message } from 'antd';
 import axios from '@/utils/axios';
 import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
+import ModifyAction from '@/components/ModifyAction.jsx'
 
 const GetDatas = () => {
   const viewTotalBooks = () => {
@@ -43,7 +44,8 @@ const GetDatas = () => {
       <div>
         <Button onClick={viewTotalBooks} style={{ marginRight: 15 }}>书本总数</Button>
         <Button onClick={viewTotalMenus} style={{ marginRight: 15 }}>目录总数</Button>
-        <Button onClick={() => message.info('功能待开发')}>探查index异常的书</Button>
+        {/* <Button onClick={() => message.info('功能待开发')}>探查index异常的书</Button> */}
+        <Button onClick={() => message.info('功能待开发')}>域名替换</Button>
       </div>
     </div>
   )

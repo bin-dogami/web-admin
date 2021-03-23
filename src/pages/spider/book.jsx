@@ -37,7 +37,7 @@ const Book = () => {
   const [form] = Form.useForm();
   const [url, setUrl] = useState('');
   const [isRecommend, setIsRecommend] = useState(false);
-  const [mnum, setMnum] = useState(isDev ? defaultNum : '');
+  const [mnum, setMnum] = useState(defaultNum);
   const [action, setAction] = useState('');
   const [data, setData] = useState({});
   const [inserting, setInserting] = useState(false);
