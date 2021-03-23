@@ -23,11 +23,10 @@ const AbNormals = styled.div`
   }
 `
 
-const MenuList = ({ book }) => {
-  const [popVisible, setPopVisible] = useState(false)
+const MenuList = ({ book, visible, setVisible }) => {
   const [isDesc, setIsDesc] = useState(false)
   const [skip, setSkip] = useState(1)
-  const [size, setSize] = useState(100)
+  const [size, setSize] = useState(50)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState([])
@@ -72,7 +71,8 @@ const MenuList = ({ book }) => {
         const data = res && res.data && res.data.data
         if (typeof data === 'string' && !data.length) {
           message.success('删除成功')
-          getList(skip, size, isDesc)
+          // @TODO: 加一个手动刷新的按钮在上面
+          // getList(skip, size, isDesc)
         } else {
           message.error(typeof data === 'string' && data.length ? data : '删除错误')
         }
@@ -134,6 +134,9 @@ const MenuList = ({ book }) => {
   }
 
   const getList = (_skip, _size, isDesc) => {
+    if (loading) {
+      return
+    }
     setSkip(_skip)
     setSize(_size)
     try {
@@ -184,18 +187,6 @@ const MenuList = ({ book }) => {
       }
     },
     {
-      title: 'mname',
-      dataIndex: 'mname',
-      render: (mname, record) => {
-        return (
-          <>
-            <a href={`${scanUrl}page/${record.id}`} target="_blank" style={{ marginRight: 10 }}>{mname}</a>
-            <ModifyAction id={record.id} defaultValue={mname} name={"mname"} modifyFnName={onModifyMenu} />
-          </>
-        )
-      }
-    },
-    {
       title: 'index',
       dataIndex: 'index',
       width: 100,
@@ -207,6 +198,18 @@ const MenuList = ({ book }) => {
               <ModifyAction id={record.id} defaultValue={index} name={"index"} modifyFnName={onModifyMenu} />
             </div>
             <ModifyAction id={record.id} name={"batchModifyIndexs"} modifyFnName={batchModifyIndexs} html={<SortAscendingOutlined />} />
+          </>
+        )
+      }
+    },
+    {
+      title: 'mname',
+      dataIndex: 'mname',
+      render: (mname, record) => {
+        return (
+          <>
+            <a href={`${scanUrl}page/${record.id}`} target="_blank" style={{ marginRight: 10 }}>{mname}</a>
+            <ModifyAction id={record.id} defaultValue={mname} name={"mname"} modifyFnName={onModifyMenu} />
           </>
         )
       }
@@ -243,8 +246,9 @@ const MenuList = ({ book }) => {
   };
 
   useEffect(() => {
-    popVisible && getList(1, size, isDesc)
-  }, [popVisible])
+    visible === 2 && setIsDesc(true)
+    visible && getList(1, size, visible === 2 ? true : isDesc)
+  }, [visible])
 
   const rowKey = (record) => {
     return record.id
@@ -252,15 +256,14 @@ const MenuList = ({ book }) => {
 
   return (
     <>
-      <Button className="viewMenus" type="primary" shape="round" size={'middle'} onClick={() => setPopVisible(true)}>查看目录list</Button>
-      <Modal width={800} title="目录列表" visible={popVisible} onOk={() => setPopVisible(false)} onCancel={() => setPopVisible(false)}>
+      <Modal width={800} title="目录列表" visible={visible} onOk={() => setVisible(0)} onCancel={() => setVisible(0)}>
         <div style={{ marginBottom: 20 }}>
           <Radio.Group onChange={onChange} value={isDesc} style={{ marginRight: 30 }}>
             <Radio value={true}>倒序</Radio>
             <Radio value={false}>正序</Radio>
           </Radio.Group>
           <Button type="primary" size={'middle'} onClick={onDetectIndexAbnormal} style={{ marginRight: 20 }}>index是否异常</Button>
-          <a data-href={book.from} onClick={onCopyHref}>{book.title}</a>
+          {book ? <a data-href={book.from} onClick={onCopyHref}>{book.title}</a> : null}
         </div>
         {abNormalIndexs.length ? (
           <AbNormals>

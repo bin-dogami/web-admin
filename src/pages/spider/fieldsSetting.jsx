@@ -7,7 +7,8 @@ import { baseUrl, scanUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY, o
 
 import Menus from '@/components/Menu.jsx'
 import ModifyAction from '@/components/ModifyAction.jsx'
-import Last100Books from '@/components/Last100Books.jsx'
+import BookList from '@/components/BookList.jsx'
+import GetDatas from '@/components/GetDatas.jsx'
 import SpiderStatus from '@/components/SpiderStatus.jsx'
 import MenuList from '@/components/MenuList.jsx'
 
@@ -169,6 +170,8 @@ const Wrapper = styled.div`
 const maxStoredBooks = 20
 
 const FailedPages = () => {
+  const [menusPopVisible, setMenusPopVisible] = useState(0)
+
   const [bookValue, setBookValue] = useState('');
   const [bookInfo, setBookInfo] = useState(null)
   const [historyBooks, setHistoryBooks] = useState([])
@@ -271,7 +274,6 @@ const FailedPages = () => {
   }
 
   const onSelectHistoryBook = id => () => {
-    // setBookValue(`${id}`)
     onSearchBook(id)
   }
   const htmlHistoryBooks = useMemo(() => {
@@ -603,8 +605,10 @@ const FailedPages = () => {
     <Wrapper className="wrapper">
       <GlobalStyle />
       <Menus name={'fieldsSetting'} />
+      <GetDatas />
       <SpiderStatus />
-      <Last100Books onSearchBook={onSearchBook} onSpider={onSpider} />
+      <BookList onSearchBook={onSearchBook} setBookInfo={setBookInfo} onSpider={onSpider} menusPopVisible={menusPopVisible} setMenusPopVisible={setMenusPopVisible} />
+      <MenuList book={bookInfo} visible={menusPopVisible} setVisible={setMenusPopVisible} />
       <div className="chunk" id="novel">
         <h2>novel字段</h2>
         <div className="content">
@@ -633,7 +637,7 @@ const FailedPages = () => {
                 <li>
                   <strong>小说Id: </strong><span>{bookInfo.id}</span>
                   <ModifyAction id={bookInfo.id} html="删除本书" name={"deleteBook"} modifyFnName={onDeleteBook} />
-                  <MenuList book={bookInfo} />
+                  <Button className="viewMenus" type="primary" shape="round" size={'middle'} onClick={() => setMenusPopVisible(1)}>查看目录list</Button>
                 </li>
                 <li>
                   <strong>是否热门推荐: </strong>

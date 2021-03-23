@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { Input, Button, Tooltip } from 'antd';
+import { Input, Button, Tooltip, Select } from 'antd';
 import { FormOutlined } from '@ant-design/icons';
 import styled, { createGlobalStyle } from 'styled-components';
 
@@ -41,6 +41,12 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
     }
   }
 
+  // 小说list 里内容清理
+  const [privateValue, setPrivateValue] = useState('')
+  const onClearAllContents = () => {
+    modifyFnName(id, privateValue)()
+  }
+
   let dom = null
   if (['deleteMenu', 'deleteBook'].includes(name)) {
     dom = (
@@ -66,6 +72,21 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >确定要重排此目录之后的所有目录的index？</Button>
     )
+  } else if (name === 'completeSpiderAllMenus') {
+    dom = (
+      <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >设置全本且全部抓完了？</Button>
+    )
+  } else if (name === 'respider') {
+    dom = (
+      <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >再次抓取</Button>
+    )
+  } else if (name === 'clearBookContents') {
+    dom = (
+      <>
+        <Select options={status} value={privateValue} onChange={value => setPrivateValue(value)} style={{ width: 500 }} dropdownClassName="clearDropper" dropdownStyle={{ zIndex: 10000 }} />
+        <Button type="primary" onClick={onClearAllContents} >清理所有章节内容</Button>
+      </>
+    )
   } else if (name === 'fixPagesContent') {
     dom = (
       <>
@@ -89,8 +110,8 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
   )
 
   return (
-    <Wrapper title={htmlModifyBookField} placement="right" onVisibleChange={onVisibleChange} trigger="click" overlayStyle={{ maxWidth: 500 }}>
-      <span className="btn">{html || <FormOutlined />}</span>
+    <Wrapper title={htmlModifyBookField} placement={["clearBookContents"].includes(name) ? "left" : "right"} onVisibleChange={onVisibleChange} trigger="click" overlayStyle={{ maxWidth: 800 }}>
+      <span className="btn" style={{ color: '#1890ff', cursor: 'pointer' }}>{html || <FormOutlined />}</span>
     </Wrapper>
   )
 }

@@ -2,52 +2,23 @@ import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { Button, Modal, Table, Select, Radio, message } from 'antd';
 import axios from '@/utils/axios';
 import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
+import styled, { createGlobalStyle } from 'styled-components';
+
+const Wrapper = styled.div`
+
+`
 
 const all = {
   label: '全部',
   value: -1
 }
-const SpiderStatus = () => {
+const SpiderStatus = ({ onSearchBook }) => {
   const [popVisible, setPopVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState(-1);
   const [statusList, setStatusList] = useState([]);
   const [statusList2, setStatusList2] = useState([]);
   const [data, setData] = useState([]);
-
-  const viewTotalBooks = () => {
-    try {
-      axios({
-        url: `${baseUrl}fixdata/viewTotalBooks`,
-        method: 'get',
-        errorTitle: '获取错误',
-      }).then((res) => {
-        const data = res && res.data && res.data.data;
-        if (typeof data === 'string') {
-          message.info(data)
-        }
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  const viewTotalMenus = () => {
-    try {
-      axios({
-        url: `${baseUrl}fixdata/viewTotalMenus`,
-        method: 'get',
-        errorTitle: '获取错误',
-      }).then((res) => {
-        const data = res && res.data && res.data.data;
-        if (typeof data === 'string') {
-          message.info(data)
-        }
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
 
   const onChangeStatus = id => e => {
     const status = e.target.value
@@ -194,13 +165,74 @@ const SpiderStatus = () => {
     return record.id
   }
 
+  const onDetectIsSpidering = () => {
+    try {
+      axios({
+        url: `${baseUrl}getbook/detectWhoIsSpidering`,
+        method: 'get',
+        errorTitle: '探查是否有书在抓取中错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        const title = typeof data === 'string' ? (data || '没有书在抓取中') : '我也不知道咋回事'
+        Modal.info({
+          title, onOk: () => {
+            const match = title.match(/#(\d+)#/)
+            if (Array.isArray(match) && match.length > 1) {
+              onSearchBook(+match[1])
+            }
+          }
+        })
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onCancelIsSpidering = () => {
+    try {
+      axios({
+        url: `${baseUrl}getbook/setCurrentSpideringStop`,
+        method: 'post',
+        errorTitle: '取消所有抓取状态错误',
+      }).then((res) => {
+        // const data = res && res.data && res.data.data
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const onSpiderAll = () => {
+    message.info('开始抓取全部书了')
+    try {
+      axios({
+        url: `${baseUrl}getbook/spiderAll`,
+        method: 'post',
+        errorTitle: '抓取全部书错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        const title = typeof data === 'string' ? data : '我也不知道咋回事'
+        Modal.info({
+          title, onOk: () => {
+            const match = title.match(/#(\d+)#/)
+            if (Array.isArray(match) && match.length > 1) {
+              onSearchBook(+match[1])
+            }
+          }
+        })
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   return (
-    <div className="chunk" style={{ minHeight: 30 }}>
+    <Wrapper className="chunk" style={{ marginBottom: 30 }}>
       <div>
-        <Button type="primary" size={'middle'} onClick={() => setPopVisible(true)} style={{ marginRight: 15 }}>抓取状态</Button>
-        <Button type="primary" size={'middle'} onClick={viewTotalBooks} style={{ marginRight: 15 }}>书本总数</Button>
-        <Button type="primary" size={'middle'} onClick={viewTotalMenus} style={{ marginRight: 15 }}>目录总数</Button>
-        <Button type="primary" size={'middle'} onClick={() => message.info('功能待开发')}>探查index异常的书</Button>
+        <Button type="primary" onClick={() => setPopVisible(true)} style={{ marginRight: 15 }}>抓取状态</Button>
+        <Button type="primary" style={{ marginRight: 15 }} onClick={onDetectIsSpidering}>在抓取?</Button>
+        <Button type="primary" style={{ marginRight: 15 }} onClick={onCancelIsSpidering}>中断抓取</Button>
+        <Button type="primary" style={{ marginRight: 15 }} onClick={onSpiderAll}>抓取all</Button>
       </div>
       <Modal width={800} title="抓取状态列表" visible={popVisible} onOk={() => setPopVisible(false)} onCancel={() => setPopVisible(false)}>
         <Radio.Group
@@ -213,7 +245,7 @@ const SpiderStatus = () => {
         />
         <Table dataSource={data} columns={columns} rowKey={rowKey} loading={loading} />
       </Modal>
-    </div>
+    </Wrapper>
   )
 }
 

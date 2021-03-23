@@ -67,6 +67,7 @@ const Last3MenusIndexEq0 = () => {
     {
       title: '小说名称',
       dataIndex: 'title',
+      width: 120,
       render: (title, record) => {
         return (
           <a href={`${scanUrl}book/${record.id}`} target="_blank">{title}</a>
