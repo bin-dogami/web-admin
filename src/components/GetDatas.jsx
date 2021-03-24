@@ -62,8 +62,8 @@ const GetDatas = () => {
         <Button onClick={viewTotalBooks} style={{ marginRight: 15 }}>书本总数</Button>
         <Button onClick={viewTotalMenus} style={{ marginRight: 15 }}>目录总数</Button>
         {/* <Button onClick={() => message.info('功能待开发')}>探查index异常的书</Button> */}
-        {/* <Button onClick={() => message.info('功能待开发')}>域名替换</Button> */}
-        <ModifyAction name={"clearAllBooks"} modifyFnName={onClearAllBooks} html={<Button>所有书内容清理</Button>} />
+        <Button onClick={() => message.info('功能待开发')}>域名替换</Button>
+        {/* <ModifyAction name={"clearAllBooks"} modifyFnName={onClearAllBooks} html={<Button>所有书内容清理</Button>} /> */}
       </div>
     </div>
   )
