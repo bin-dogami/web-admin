@@ -25,6 +25,14 @@ const Wrapper = styled.div`
       margin: 0 0 15px 15px;
     }
   }
+
+  .link {
+    color: #1ca9bb;
+
+    &:link {
+      color: #1890ff;
+    }
+  }
 `
 
 const descOptions = [
@@ -153,9 +161,13 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
       }).then((res) => {
         const data = res && res.data && res.data.data
         if (data === '') {
-          message.success('修复成功')
+          Modal.success({
+            title: '修复成功'
+          })
         } else {
-          message.error(typeof data === 'string' ? data : '有未知错误')
+          Modal.error({
+            title: typeof data === 'string' ? data : '有未知错误'
+          })
         }
       })
     } catch (e) {
@@ -181,7 +193,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
       dataIndex: 'title',
       render: (title, record) => {
         return (
-          <a href={`${scanUrl}book/${record.id}`} target="_blank">{title} {record.isComplete ? `（${record.isSpiderComplete ? '抓' : ''}完）` : ''}</a>
+          <a className="link" href={`${scanUrl}book/${record.id}`} target="_blank">{title} {record.isComplete ? `（${record.isSpiderComplete ? '抓' : ''}完）` : ''}</a>
         )
       }
     },
