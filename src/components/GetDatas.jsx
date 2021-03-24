@@ -39,13 +39,31 @@ const GetDatas = () => {
     }
   }
 
+  const onClearAllBooks = () => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/clearAllBooks`,
+        method: 'get',
+        errorTitle: '获取错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'string') {
+          message.info(data)
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   return (
     <div className="chunk" style={{ marginBottom: 20 }}>
       <div>
         <Button onClick={viewTotalBooks} style={{ marginRight: 15 }}>书本总数</Button>
         <Button onClick={viewTotalMenus} style={{ marginRight: 15 }}>目录总数</Button>
         {/* <Button onClick={() => message.info('功能待开发')}>探查index异常的书</Button> */}
-        <Button onClick={() => message.info('功能待开发')}>域名替换</Button>
+        {/* <Button onClick={() => message.info('功能待开发')}>域名替换</Button> */}
+        <ModifyAction name={"clearAllBooks"} modifyFnName={onClearAllBooks} html={<Button>所有书内容清理</Button>} />
       </div>
     </div>
   )

@@ -80,6 +80,10 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
     dom = (
       <Button type="primary" onClick={onModifyFieldValue(id, '', '')} >再次抓取</Button>
     )
+  } else if (name === 'clearAllBooks') {
+    dom = (
+      <Button type="primary" onClick={onModifyFieldValue('', '', '')} >ok，去替换吧</Button>
+    )
   } else if (name === 'clearBookContents') {
     dom = (
       <>
