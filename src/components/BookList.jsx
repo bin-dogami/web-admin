@@ -317,7 +317,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
           <Button disabled={loading} onClick={() => getList(skip, size)}>查询</Button>
         </div>
         <div className="content">
-          <Table dataSource={data} size={'small'} pagination={pagination} onChange={onTableChange} loading={loading} columns={columns} rowKey={rowKey} />
+          <Table dataSource={data} pagination={pagination} onChange={onTableChange} loading={loading} columns={columns} rowKey={rowKey} />
         </div>
       </div>
     </Wrapper>

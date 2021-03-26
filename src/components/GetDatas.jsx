@@ -39,22 +39,22 @@ const GetDatas = () => {
     }
   }
 
-  const onClearAllBooks = () => () => {
-    try {
-      axios({
-        url: `${baseUrl}fixdata/clearAllBooks`,
-        method: 'get',
-        errorTitle: '获取错误',
-      }).then((res) => {
-        const data = res && res.data && res.data.data;
-        if (typeof data === 'string') {
-          message.info(data)
-        }
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
+  // const onClearAllBooks = () => () => {
+  //   try {
+  //     axios({
+  //       url: `${baseUrl}fixdata/clearAllBooks`,
+  //       method: 'get',
+  //       errorTitle: '获取错误',
+  //     }).then((res) => {
+  //       const data = res && res.data && res.data.data;
+  //       if (typeof data === 'string') {
+  //         message.info(data)
+  //       }
+  //     })
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  // }
 
   return (
     <div className="chunk" style={{ marginBottom: 20 }}>

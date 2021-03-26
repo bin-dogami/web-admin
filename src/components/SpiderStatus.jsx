@@ -3,6 +3,7 @@ import { Button, Modal, Table, Select, Radio, message } from 'antd';
 import axios from '@/utils/axios';
 import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
 import styled, { createGlobalStyle } from 'styled-components';
+import { SyncOutlined } from '@ant-design/icons';
 
 const Wrapper = styled.div`
 
@@ -231,8 +232,8 @@ const SpiderStatus = ({ onSearchBook }) => {
       <div>
         <Button type="primary" onClick={() => setPopVisible(true)} style={{ marginRight: 15 }}>抓取状态</Button>
         <Button type="primary" style={{ marginRight: 15 }} onClick={onDetectIsSpidering}>在抓取?</Button>
-        <Button type="primary" style={{ marginRight: 15 }} onClick={onCancelIsSpidering}>中断抓取</Button>
         <Button type="primary" style={{ marginRight: 15 }} onClick={onSpiderAll}>抓取all</Button>
+        <Button type="primary" style={{ marginRight: 15 }} onClick={onCancelIsSpidering}>中断抓取</Button>
       </div>
       <Modal width={800} title="抓取状态列表" visible={popVisible} onOk={() => setPopVisible(false)} onCancel={() => setPopVisible(false)}>
         <Radio.Group
@@ -241,8 +242,9 @@ const SpiderStatus = ({ onSearchBook }) => {
           value={status}
           optionType="button"
           buttonStyle="solid"
-          style={{ marginBottom: 15 }}
+          style={{ marginBottom: 15, marginRight: 15 }}
         />
+        <Button type="primary" onClick={() => getList()}><SyncOutlined spin={loading} /></Button>
         <Table dataSource={data} columns={columns} rowKey={rowKey} loading={loading} />
       </Modal>
     </Wrapper>

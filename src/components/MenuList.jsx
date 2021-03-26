@@ -2,9 +2,10 @@ import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { Button, Modal, Table, message, Radio } from 'antd';
 import { SortAscendingOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from '@/utils/axios';
-import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
+import { baseUrl, scanUrl, onCopyHref, copyText } from '@/utils/index';
 import ModifyAction from '@/components/ModifyAction.jsx'
 import styled, { createGlobalStyle } from 'styled-components';
+import { SyncOutlined } from '@ant-design/icons';
 
 const AbNormals = styled.div`
   margin-bottom: 20px;
@@ -180,7 +181,7 @@ const MenuList = ({ book, visible, setVisible }) => {
       render: (id, record) => {
         return (
           <>
-            <a href={`${scanUrl}page/${record.id}`} target="_blank" style={{ marginRight: 10 }}>{id}</a>
+            <span style={{ marginRight: 10 }} onClick={() => copyText(id)}>{id}</span>
             <ModifyAction id={id} html="删除目录" name={"deleteMenu"} modifyFnName={onDeleteMenu} html={<DeleteOutlined />} />
           </>
         )
@@ -262,8 +263,9 @@ const MenuList = ({ book, visible, setVisible }) => {
             <Radio value={true}>倒序</Radio>
             <Radio value={false}>正序</Radio>
           </Radio.Group>
-          <Button type="primary" size={'middle'} onClick={onDetectIndexAbnormal} style={{ marginRight: 20 }}>index是否异常</Button>
-          {book ? <a data-href={book.from} onClick={onCopyHref}>{book.title}</a> : null}
+          <Button type="primary" size={'middle'} onClick={onDetectIndexAbnormal} style={{ marginRight: 15 }}>index是否异常</Button>
+          {book ? <a data-href={book.from} onClick={onCopyHref} style={{ marginRight: 20, display: 'inline-block' }}>{book.title}</a> : null}
+          <Button type="primary" onClick={() => getList(skip, size, isDesc)}><SyncOutlined spin={loading} /></Button>
         </div>
         {abNormalIndexs.length ? (
           <AbNormals>

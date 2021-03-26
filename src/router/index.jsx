@@ -6,6 +6,7 @@ import Book from '../pages/spider/book'
 import FieldsSetting from '../pages/spider/fieldsSetting'
 import SpiderError from '../pages/spider/spiderError'
 import TumorClear from '../pages/spider/tumorClear'
+import SubmitSeo from '../pages/spider/submitSeo'
 import FragmentFunctions from '../pages/spider/fragmentFunctions'
 
 const Routes = () => (
@@ -17,6 +18,7 @@ const Routes = () => (
       {/* < Route exact path='/repeatsMenu' component={RepeatsMenu} /> */}
       {/* < Route exact path='/failedPages' component={FailedPages} /> */}
       < Route exact path='/tumorClear' component={TumorClear} />
+      < Route exact path='/submitSeo' component={SubmitSeo} />
       < Route exact path='/fragmentFunctions' component={FragmentFunctions} />
       <Redirect from="*" to='/' />
     </Switch>
