@@ -85,6 +85,15 @@ const SpiderStatus = ({ onSearchBook }) => {
       }
     },
     {
+      title: '章i=0',
+      dataIndex: 'allIndexEq0',
+      render: (allIndexEq0, record) => {
+        return (
+          <span>{allIndexEq0 ? '是' : '否'}</span>
+        )
+      }
+    },
+    {
       title: '更改状态',
       dataIndex: 'statusText',
       render: (text, record, index) => {

@@ -4,6 +4,7 @@ import axios from '@/utils/axios';
 import { baseUrl, scanUrl, copyText, onCopyHref } from '@/utils/index';
 import styled, { createGlobalStyle } from 'styled-components';
 import ModifyAction from '@/components/ModifyAction.jsx'
+import moment from 'moment'
 
 const GlobalStyle = createGlobalStyle`
   .clearDropper .ant-select-item-option-content {
@@ -179,6 +180,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
     {
       title: '小说ID',
       dataIndex: 'id',
+      fixed: 'left',
       render: (id, record) => {
         return (
           <>
@@ -191,11 +193,20 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
     {
       title: '小说名称',
       dataIndex: 'title',
+      fixed: 'left',
       render: (title, record) => {
         return (
           <a className="link" href={`${scanUrl}book/${record.id}`} target="_blank">{title} {record.isComplete ? `（${record.isSpiderComplete ? '抓' : ''}完）` : ''}</a>
         )
       }
+    },
+    {
+      title: '所有index=0',
+      dataIndex: 'allIndexEq0',
+    },
+    {
+      title: '抓取状态',
+      dataIndex: 'spiderStatus',
     },
     {
       title: '章节数',
@@ -209,6 +220,24 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
           <>
             <a data-href={from} onClick={onCopyHref}>复制链接</a>
           </>
+        )
+      }
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'ctime',
+      render: (ctime, record) => {
+        return (
+          moment(ctime).format('YYYY-MM-DD')
+        )
+      }
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updatetime',
+      render: (updatetime, record) => {
+        return (
+          moment(updatetime).format('YYYY-MM-DD')
         )
       }
     },
@@ -317,7 +346,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
           <Button disabled={loading} onClick={() => getList(skip, size)}>查询</Button>
         </div>
         <div className="content">
-          <Table dataSource={data} pagination={pagination} onChange={onTableChange} loading={loading} columns={columns} rowKey={rowKey} />
+          <Table dataSource={data} pagination={pagination} onChange={onTableChange} loading={loading} columns={columns} rowKey={rowKey} scroll={{ x: 400 }} />
         </div>
       </div>
     </Wrapper>

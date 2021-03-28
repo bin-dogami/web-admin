@@ -6,6 +6,7 @@ import { baseUrl, scanUrl, onCopyHref, copyText } from '@/utils/index';
 import ModifyAction from '@/components/ModifyAction.jsx'
 import styled, { createGlobalStyle } from 'styled-components';
 import { SyncOutlined } from '@ant-design/icons';
+import moment from 'moment'
 
 const AbNormals = styled.div`
   margin-bottom: 20px;
@@ -226,6 +227,15 @@ const MenuList = ({ book, visible, setVisible }) => {
         )
       }
     },
+    {
+      title: '创建时间',
+      dataIndex: 'ctime',
+      render: (ctime, record) => {
+        return (
+          moment(ctime).format('YYYY-MM-DD')
+        )
+      }
+    }
   ]
 
   const pagination = {

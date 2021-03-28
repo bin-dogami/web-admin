@@ -358,7 +358,7 @@ const SubmitSeo = () => {
       dataIndex: 'ctime',
       render: (ctime, record) => {
         return (
-          moment(ctime).format('YYYY-MM-DD HH:mm')
+          moment(ctime).format('YYYY-MM-DD')
         )
       }
     },
@@ -437,7 +437,7 @@ const SubmitSeo = () => {
               onChange={(date, dateString) => setDateMenus(dateString)}
             />
             <Button onClick={onSearchMenus} style={{ marginLeft: 15 }}>查询</Button>
-            <Button onClick={onAddSelectedMenus} style={{ marginLeft: 15 }}>添加选中书</Button>
+            <Button onClick={onAddSelectedMenus} style={{ marginLeft: 15 }}>添加选中目录</Button>
             <Button onClick={onAddSelectedAllMenus} style={{ marginLeft: 15 }}>添加全部目录</Button>
           </Form.Item>
           <Table
