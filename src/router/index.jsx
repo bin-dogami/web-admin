@@ -7,6 +7,7 @@ import FieldsSetting from '../pages/spider/fieldsSetting'
 import SpiderError from '../pages/spider/spiderError'
 import TumorClear from '../pages/spider/tumorClear'
 import SubmitSeo from '../pages/spider/submitSeo'
+import Visitors from '../pages/spider/visitors'
 import FragmentFunctions from '../pages/spider/fragmentFunctions'
 
 const Routes = () => (
@@ -19,6 +20,7 @@ const Routes = () => (
       {/* < Route exact path='/failedPages' component={FailedPages} /> */}
       < Route exact path='/tumorClear' component={TumorClear} />
       < Route exact path='/submitSeo' component={SubmitSeo} />
+      < Route exact path='/visitors' component={Visitors} />
       < Route exact path='/fragmentFunctions' component={FragmentFunctions} />
       <Redirect from="*" to='/' />
     </Switch>

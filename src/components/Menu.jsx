@@ -20,6 +20,9 @@ const Menus = ({ name }) => {
       <Menu.Item key="submitSeo">
         <a href="/submitSeo">百度收录</a>
       </Menu.Item>
+      <Menu.Item key="visitors">
+        <a href="/visitors">用户访问</a>
+      </Menu.Item>
       <Menu.Item key="fragmentFunctions">
         <a href="/fragmentFunctions">零碎功能</a>
       </Menu.Item>
