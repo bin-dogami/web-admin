@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, DatePicker, Input, Button, Table, Col, message, Modal } from 'antd';
+import { Form, DatePicker, Input, Button, Table, Radio, message, Modal } from 'antd';
 import styled from 'styled-components';
 import axios from '@/utils/axios';
 import { isDev, baseUrl, scanUrl, copyText } from '@/utils/index';
@@ -37,6 +37,20 @@ const maxSubmitCountOneTime = 2000
 const startDate = moment().subtract(1, 'd')
 const endDate = moment().add(1, 'd')
 const dateFormat = 'YYYY-MM-DD'
+const onlineOptions = [
+  {
+    label: '全部',
+    value: '1',
+  },
+  {
+    label: '未上线',
+    value: '2',
+  },
+  {
+    label: '已上线',
+    value: '3',
+  },
+]
 
 const SubmitSeo = () => {
   const [seoLinks, setSeoLinks] = useState('')
@@ -44,6 +58,8 @@ const SubmitSeo = () => {
   // 已提交完的记录下，下次再提交时去掉重复的
   const submitedIds = useRef({})
 
+  // 目录的
+  const [mOnline, setMOnline] = useState('2')
   // 查询出来的数据，table 的数据
   const [menuList, setMenuList] = useState([])
   // checkbox 选中的数据
@@ -61,6 +77,8 @@ const SubmitSeo = () => {
   const [dateMenus, setDateMenus] = useState([moment(startDate, dateFormat), moment(endDate, dateFormat)])
   const [menusLoading, setmenusLoading] = useState(false)
 
+  // 书的
+  const [bOnline, setBOnline] = useState('2')
   const [bookList, setBookList] = useState([])
   const [selectedBookIds, setSelectedBookIds] = useState([])
   const [addedBooksIds, setAddedBooksIds] = useState([])
@@ -75,9 +93,55 @@ const SubmitSeo = () => {
   const [dateBooks, setDateBooks] = useState([moment(startDate, dateFormat), moment(endDate, dateFormat)])
   const [booksLoading, setbooksLoading] = useState(false)
 
+  const onSetMenusOnline = (ids) => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/setAllMnusOnline`,
+        method: 'post',
+        data: {
+          ids
+        },
+        errorTitle: '设置错误',
+      }).then((res) => {
+        message.info('设置完成')
+        // const data = res && res.data && res.data.data
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const onSetBooksOnline = (ids) => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/setAllBooksOnline`,
+        method: 'post',
+        data: {
+          ids
+        },
+        errorTitle: '设置错误',
+      }).then((res) => {
+        message.info('设置完成')
+        // const data = res && res.data && res.data.data
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   // 选中的数据只在用户取消选中 或 清除选中的时候才会消失
   const onAddSelectedMenus = () => {
     _setAddedMenuIds(Array.from(new Set([...addedMenuIds, ...selectedMenuIds])))
+  }
+
+  // 选中的添加且上线，实际操作是先上线再提交SEO
+  const onAddSelectedMenusAndOnline = () => {
+    if (!selectedMenuIds.length) {
+      message.warn('总得选一个吧')
+      return
+    }
+    onAddSelectedMenus()
+    onSetMenusOnline(selectedMenuIds.join(','))
   }
 
   const onAddSelectedAllMenus = () => {
@@ -88,6 +152,17 @@ const SubmitSeo = () => {
     _setAddedBooksIds(Array.from(new Set([...addedBooksIds, ...selectedBookIds])))
   }
 
+  // 选中的添加且上线，实际操作是先上线书及其目录再提交SEO
+  const onAddSelectedBooksAndOnline = () => {
+    if (!selectedBookIds.length) {
+      message.warn('总得选一个吧')
+      return
+    }
+    onAddSelectedBooks()
+    onSetBooksOnline(selectedBookIds.join(','))
+  }
+
+  // 添加选中的书和它的50个最近的目录
   const onAddSelectedBooksAndMenus = () => {
     const bookIds = bookList.filter(({ isOnline }) => !isOnline).map(({ id }) => id)
     _setAddedBooksIds(Array.from(new Set([...addedBooksIds, ...bookIds])))
@@ -126,11 +201,13 @@ const SubmitSeo = () => {
           method: 'get',
           params: {
             sDate: moment(dateMenus[0]).format(dateFormat),
-            eDate: moment(dateMenus[1]).format(dateFormat)
+            eDate: moment(dateMenus[1]).format(dateFormat),
+            online: mOnline,
           },
           errorTitle: '获取错误',
         }).then((res) => {
           setmenusLoading(false)
+          message.info('查询出来的数据不包含未上线的书的目录')
           const data = res && res.data && res.data.data
           if (Array.isArray(data)) {
             setMenuList(data)
@@ -152,7 +229,8 @@ const SubmitSeo = () => {
           method: 'get',
           params: {
             sDate: moment(dateBooks[0]).format(dateFormat),
-            eDate: moment(dateBooks[1]).format(dateFormat)
+            eDate: moment(dateBooks[1]).format(dateFormat),
+            online: bOnline,
           },
           errorTitle: '获取错误',
         }).then((res) => {
@@ -385,46 +463,19 @@ const SubmitSeo = () => {
 
   useEffect(() => {
     onSearchMenus()
+  }, [mOnline])
+
+  useEffect(() => {
     onSearchBooks()
-  }, [])
-
-  const onSetMenusOnline = () => {
-    try {
-      axios({
-        url: `${baseUrl}fixdata/setAllMnusOnline`,
-        method: 'post',
-        errorTitle: '设置错误',
-      }).then((res) => {
-        message.info('设置完成')
-        // const data = res && res.data && res.data.data
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const onSetBooksOnline = () => {
-    try {
-      axios({
-        url: `${baseUrl}fixdata/setAllBooksOnline`,
-        method: 'post',
-        errorTitle: '设置错误',
-      }).then((res) => {
-        message.info('设置完成')
-        // const data = res && res.data && res.data.data
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  }, [bOnline])
 
   return (
     <Wrapper className="wrapper">
       <Menus name={'submitSeo'} />
       <div className="chunk" style={{ marginBottom: 20 }}>
         <div>
-          <Button onClick={onSetMenusOnline} style={{ marginRight: 15 }}>上线所有目录</Button>
-          <Button onClick={onSetBooksOnline} style={{ marginRight: 15 }}>上线所有书本</Button>
+          <Button onClick={() => onSetMenusOnline('')} style={{ marginRight: 15 }}>上线所有目录</Button>
+          <Button onClick={() => onSetBooksOnline('')} style={{ marginRight: 15 }}>上线所有书本</Button>
         </div>
       </div>
       <div className="chunk">
@@ -436,9 +487,18 @@ const SubmitSeo = () => {
               format={dateFormat}
               onChange={(date, dateString) => setDateMenus(dateString)}
             />
-            <Button onClick={onSearchMenus} style={{ marginLeft: 15 }}>查询</Button>
-            <Button onClick={onAddSelectedMenus} style={{ marginLeft: 15 }}>添加选中目录</Button>
-            <Button onClick={onAddSelectedAllMenus} style={{ marginLeft: 15 }}>添加全部目录</Button>
+            <Radio.Group
+              options={onlineOptions}
+              onChange={e => setMOnline(e.target.value)}
+              value={mOnline}
+              optionType="button"
+              buttonStyle="solid"
+              style={{ marginLeft: 15 }}
+            />
+            <Button onClick={onSearchMenus} style={{ marginLeft: 15 }}>查询</Button><br />
+            <Button type="primary" onClick={onAddSelectedMenus} style={{ marginTop: 15 }}>添加选中目录</Button>
+            <Button type="primary" onClick={onAddSelectedMenusAndOnline} style={{ marginLeft: 15, marginTop: 15 }}>添加选中目录并上线</Button>
+            <Button type="primary" onClick={onAddSelectedAllMenus} style={{ marginLeft: 15, marginTop: 15 }}>添加全部目录</Button>
           </Form.Item>
           <Table
             rowSelection={{
@@ -459,9 +519,18 @@ const SubmitSeo = () => {
               format={dateFormat}
               onChange={(date, dateString) => setDateBooks(dateString)}
             />
-            <Button onClick={onSearchBooks} style={{ marginLeft: 15 }}>查询</Button>
-            <Button onClick={onAddSelectedBooks} style={{ marginLeft: 15 }}>添加选中书</Button>
-            <Button onClick={onAddSelectedBooksAndMenus} style={{ marginLeft: 15 }}>添加未上线书及其最新50个目录</Button>
+            <Radio.Group
+              options={onlineOptions}
+              onChange={e => setBOnline(e.target.value)}
+              value={bOnline}
+              optionType="button"
+              buttonStyle="solid"
+              style={{ marginLeft: 15 }}
+            />
+            <Button onClick={onSearchBooks} style={{ marginLeft: 15 }}>查询</Button><br />
+            <Button type="primary" onClick={onAddSelectedBooks} style={{ marginTop: 15 }}>添加选中书</Button>
+            <Button type="primary" onClick={onAddSelectedBooksAndOnline} style={{ marginLeft: 15, marginTop: 15 }}>添加选中书并上线</Button>
+            <Button type="primary" onClick={onAddSelectedBooksAndMenus} style={{ marginLeft: 15, marginTop: 15 }}>添加未上线书及其最新50个目录</Button>
           </Form.Item>
           <Table
             rowSelection={{

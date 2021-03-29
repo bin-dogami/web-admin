@@ -217,6 +217,17 @@ const MenuList = ({ book, visible, setVisible }) => {
       }
     },
     {
+      title: '上线否',
+      dataIndex: 'isOnline',
+      render: (isOnline, record) => {
+        return (
+          <>
+            <span>{isOnline ? '上了' : '没上'}</span>
+          </>
+        )
+      }
+    },
+    {
       title: '原标题',
       dataIndex: 'moriginalname',
       render: (moriginalname, record) => {

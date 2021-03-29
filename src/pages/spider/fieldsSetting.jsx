@@ -3,6 +3,7 @@ import { Form, Input, InputNumber, Button, message, Modal, Empty, Tooltip, Table
 
 import styled, { createGlobalStyle } from 'styled-components';
 import axios from '@/utils/axios';
+import moment from 'moment';
 import { baseUrl, scanUrl, BOOK_SEARCH_HISTORY_KEY, AUTHOR_SEARCH_HISTORY_KEY, onCopyHref } from '@/utils/index';
 
 import Menus from '@/components/Menu.jsx'
@@ -674,6 +675,8 @@ const FailedPages = () => {
                   <strong>完本且抓取完了: </strong><span>{bookInfo.isSpiderComplete ? '已抓取完' : '未完'}</span>
                   <ModifyAction id={bookInfo.id} name={"isSpiderComplete"} status={bookInfo.isSpiderComplete} modifyFnName={onModifyBook} />
                 </li>
+                <li><strong>创建时间: </strong><span>{moment(bookInfo.ctime).format('YYYY-MM-DD')}</span></li>
+                <li><strong>更新时间: </strong><span>{moment(bookInfo.updatetime).format('YYYY-MM-DD')}</span></li>
               </ul>
             }
           </div>
@@ -714,6 +717,7 @@ const FailedPages = () => {
                 <li><strong>content: </strong><span>{menuInfo.content}</span></li>
                 <li><strong>错误类型: </strong><span>{menuInfo.ErrorType == '1' ? '目录插入失败' : '没错'}</span></li>
                 <li><strong>来源: </strong><a data-href={menuInfo.from} onClick={onCopyHref}>{menuInfo.from}</a></li>
+                <li><strong>创建时间: </strong><span>{moment(menuInfo.ctime).format('YYYY-MM-DD')}</span></li>
               </ul>
             }
           </div>

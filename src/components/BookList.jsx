@@ -180,6 +180,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
     {
       title: '小说ID',
       dataIndex: 'id',
+      width: 100,
       fixed: 'left',
       render: (id, record) => {
         return (
@@ -194,6 +195,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
       title: '小说名称',
       dataIndex: 'title',
       fixed: 'left',
+      width: 100,
       render: (title, record) => {
         return (
           <a className="link" href={`${scanUrl}book/${record.id}`} target="_blank">{title} {record.isComplete ? `（${record.isSpiderComplete ? '抓' : ''}完）` : ''}</a>
@@ -201,19 +203,35 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
       }
     },
     {
+      title: '上线否',
+      width: 60,
+      dataIndex: 'isOnline',
+      render: (isOnline, record) => {
+        return (
+          <>
+            <span>{isOnline ? '上了' : '没上'}</span>
+          </>
+        )
+      }
+    },
+    {
       title: '所有index=0',
+      width: 80,
       dataIndex: 'allIndexEq0',
     },
     {
       title: '抓取状态',
+      width: 80,
       dataIndex: 'spiderStatus',
     },
     {
       title: '章节数',
+      width: 60,
       dataIndex: 'menusLen',
     },
     {
       title: '来源',
+      width: 80,
       dataIndex: 'from',
       render: (from, record) => {
         return (
@@ -225,6 +243,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
     },
     {
       title: '创建时间',
+      width: 100,
       dataIndex: 'ctime',
       render: (ctime, record) => {
         return (
@@ -234,6 +253,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
     },
     {
       title: '更新时间',
+      width: 100,
       dataIndex: 'updatetime',
       render: (updatetime, record) => {
         return (
@@ -243,6 +263,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
     },
     {
       title: '操作',
+      width: 120,
       dataIndex: 'handler',
       render: (text, record) => {
         return (
@@ -318,14 +339,14 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
       <GlobalStyle />
       <div className="chunk">
         <h2>小说list</h2>
-        <div style={{ margin: '15px 0' }}>
+        <div style={{ margin: '15px 0 0' }}>
           <Radio.Group
             options={descOptions}
             onChange={e => setDesc(e.target.value)}
             value={desc}
             optionType="button"
             buttonStyle="solid"
-            style={{ marginRight: 15 }}
+            style={{ marginRight: 10, marginBottom: 15 }}
           />
           <Radio.Group
             options={completeOptions}
@@ -333,7 +354,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
             value={complete}
             optionType="button"
             buttonStyle="solid"
-            style={{ marginRight: 15 }}
+            style={{ marginRight: 10, marginBottom: 15 }}
           />
           <Radio.Group
             options={completeSpiderOptions}
@@ -341,7 +362,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
             value={completeSpider}
             optionType="button"
             buttonStyle="solid"
-            style={{ marginRight: 15 }}
+            style={{ marginRight: 10, marginBottom: 15 }}
           />
           <Button disabled={loading} onClick={() => getList(skip, size)}>查询</Button>
         </div>

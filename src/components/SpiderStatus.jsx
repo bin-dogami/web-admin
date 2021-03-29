@@ -68,6 +68,7 @@ const SpiderStatus = ({ onSearchBook }) => {
     },
     {
       title: '小说名称',
+      width: 120,
       dataIndex: 'title',
       render: (title, record) => {
         return (
@@ -95,6 +96,7 @@ const SpiderStatus = ({ onSearchBook }) => {
     },
     {
       title: '更改状态',
+      width: 220,
       dataIndex: 'statusText',
       render: (text, record, index) => {
         const _statusList = JSON.parse(JSON.stringify(statusList))
@@ -113,6 +115,11 @@ const SpiderStatus = ({ onSearchBook }) => {
           />
         )
       }
+    },
+    {
+      title: '备注',
+      width: 150,
+      dataIndex: 'text',
     },
   ];
 
