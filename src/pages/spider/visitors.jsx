@@ -7,8 +7,8 @@ import { Spin } from 'antd';
 import Menus from '@/components/Menu.jsx'
 import moment from 'moment';
 
-const { RangePicker } = DatePicker;
-const { TextArea } = Input;
+// const { RangePicker } = DatePicker;
+// const { TextArea } = Input;
 
 const Wrapper = styled.div`
   padding-bottom: 50px;
@@ -34,7 +34,34 @@ const Wrapper = styled.div`
 
 const Visitors = () => {
   const [loading, setLoading] = useState(false)
+  const [collectLoading, setCollectLoading] = useState(false)
   const [data, setData] = useState([])
+
+  const collectLogs = () => {
+    if (collectLoading) {
+      return
+    }
+    try {
+      setCollectLoading(true)
+      axios({
+        url: `${baseUrl}fixdata/collectNginxLogs`,
+        method: 'get',
+        params: {
+          // skip: (_skip - 1) * _size,
+          // size: _size,
+        },
+        errorTitle: '获取错误',
+      }).then((res) => {
+        setCollectLoading(false)
+        const data = res && res.data && res.data.data
+        message.info(typeof data === 'string' ? data : '收集完成')
+        getList()
+      })
+    } catch (e) {
+      setCollectLoading(false)
+      console.log(e)
+    }
+  }
 
   const getList = () => {
     if (loading) {
@@ -73,44 +100,58 @@ const Visitors = () => {
       }
     },
     {
+      title: 'id',
+      dataIndex: 'id',
+    },
+    {
+      title: '访问时间',
+      dataIndex: 'ctime',
+    },
+    {
       title: 'host',
       dataIndex: 'host',
     },
     {
-      title: '哪家',
+      title: '访问页面',
+      dataIndex: 'url',
+      render: (url) => {
+        return (
+          url.replace('GET ', '').replace(' HTTP/1.1', '')
+        )
+      }
+    },
+    {
+      title: '爬虫',
       dataIndex: 'spider',
+    },
+    {
+      title: 'ip',
+      dataIndex: 'ip',
     },
     {
       title: 'referer',
       dataIndex: 'referer',
     },
     {
-      title: 'user-agent',
-      dataIndex: 'useragent',
+      title: 'use_agent',
+      dataIndex: 'use_agent',
     },
     {
-      title: 'sec-ch-ua',
-      dataIndex: 'secchua',
+      title: 'http_x_forwarded_for',
+      dataIndex: 'http_x_forwarded_for',
     },
     {
-      title: 'sec-ch-ua-mobile',
-      dataIndex: 'secchuamobile',
+      title: '响应状态',
+      dataIndex: 'status',
     },
     {
-      title: '全部信息',
-      dataIndex: 'headers',
-      width: 200,
+      title: '主体长度',
+      dataIndex: 'bytes',
     },
     {
-      title: '创建时间',
-      dataIndex: 'ctime',
-      width: 100,
-      render: (ctime, record) => {
-        return (
-          moment(ctime).format('YYYY-MM-DD')
-        )
-      }
-    }
+      title: '后台user',
+      dataIndex: 'user',
+    },
   ]
 
   // const pagination = {
@@ -142,10 +183,13 @@ const Visitors = () => {
   return (
     <Wrapper className="wrapper">
       <Menus name={'visitors'} />
+      <div className="chunk" style={{ marginBottom: 40 }}>
+        <Button loading={collectLoading} type="primary" onClick={collectLogs} style={{ marginRight: 15 }}>收集日志到数据库里</Button>
+      </div>
       <div className="chunk">
         <h2>查看用户访问设备信息</h2>
         <div className="content">
-          {/* <Form.Item label="目录查询"> */}
+          <Form.Item label="查询">
             {/* <RangePicker
               defaultValue={dateMenus}
               format={dateFormat}
@@ -159,8 +203,8 @@ const Visitors = () => {
               buttonStyle="solid"
               style={{ marginLeft: 15 }}
             /> */}
-            {/* <Button onClick={onSearchMenus} style={{ marginLeft: 15 }}>查询</Button><br /> */}
-          {/* </Form.Item> */}
+            <Button loading={loading} type="primary" onClick={() => getList()} style={{ marginRight: 15 }}>查询</Button>
+          </Form.Item>
           <Table
             dataSource={data}
             loading={loading}
