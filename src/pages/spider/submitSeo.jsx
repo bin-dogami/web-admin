@@ -103,26 +103,11 @@ const SubmitSeo = () => {
         },
         errorTitle: '设置错误',
       }).then((res) => {
-        message.info('设置完成')
-        // const data = res && res.data && res.data.data
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const onSetBooksOnline = (ids) => {
-    try {
-      axios({
-        url: `${baseUrl}fixdata/setAllBooksOnline`,
-        method: 'post',
-        data: {
-          ids
-        },
-        errorTitle: '设置错误',
-      }).then((res) => {
-        message.info('设置完成')
-        // const data = res && res.data && res.data.data
+        // @TODO: 返回的数据有哪些成功了，哪些成功哪些不成功可以弄一下，但不重要
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string') {
+          message.info(data || '设置完成')
+        }
       })
     } catch (error) {
       console.log(error)
@@ -145,52 +130,82 @@ const SubmitSeo = () => {
   }
 
   const onAddSelectedAllMenus = () => {
-    _setAddedMenuIds(Array.from(new Set([...addedMenuIds, ...menuList.map(({ id }) => id)])))
+    if (!menuList.length) {
+      message.warn('没有可选择的数据')
+      return
+    }
+    const selectedMenuIds = Array.from(new Set([...addedMenuIds, ...menuList.map(({ id }) => id)]))
+    _setAddedMenuIds(selectedMenuIds)
+    onSetMenusOnline(selectedMenuIds.join(','))
   }
 
   const onAddSelectedBooks = () => {
     _setAddedBooksIds(Array.from(new Set([...addedBooksIds, ...selectedBookIds])))
   }
 
+  const onSetBooksOnline = (ids, getAllMenus) => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/setAllBooksOnline`,
+        method: 'post',
+        data: {
+          ids,
+          allmenus: getAllMenus ? 1 : 0
+        },
+        errorTitle: '设置错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string') {
+          message.info(data || '设置完成')
+        } else if (Array.isArray(data)) {
+          message.info(`设置完成， 获取了 ${data.length} 个目录`)
+          _setAddedMenuIds(Array.from(new Set([...addedMenuIds, ...data])))
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   // 选中的添加且上线，实际操作是先上线书及其目录再提交SEO
-  const onAddSelectedBooksAndOnline = () => {
+  const onAddSelectedBooksAndOnline = (getAllMenus) => {
     if (!selectedBookIds.length) {
       message.warn('总得选一个吧')
       return
     }
     onAddSelectedBooks()
-    onSetBooksOnline(selectedBookIds.join(','))
+    onSetBooksOnline(selectedBookIds.join(','), getAllMenus)
   }
 
-  // 添加选中的书和它的50个最近的目录
-  const onAddSelectedBooksAndMenus = () => {
-    const bookIds = bookList.filter(({ isOnline }) => !isOnline).map(({ id }) => id)
-    _setAddedBooksIds(Array.from(new Set([...addedBooksIds, ...bookIds])))
-    try {
-      if (!bookIds.length) {
-        return
-      }
-      axios({
-        url: `${baseUrl}fixdata/getLastTakeMenusByNovels`,
-        method: 'get',
-        params: {
-          ids: bookIds
-        },
-        errorTitle: '获取错误',
-      }).then((res) => {
-        const data = res && res.data && res.data.data
-        if (Array.isArray(data)) {
-          message.success(`成功获取了 ${data.length} 条目录`)
-          _setAddedMenuIds(Array.from(new Set([...addedMenuIds, ...data])))
-        } else {
-          message.success(`获取失败`)
-        }
-      })
-    } catch (error) {
-      message.success(`获取失败`)
-      console.log(error)
-    }
-  }
+  // 添加选中的书和它的50个最近的目录， 先下了，不需要一次性全上线
+  // const onAddSelectedBooksAndMenus = () => {
+  //   const bookIds = bookList.filter(({ isOnline }) => !isOnline).map(({ id }) => id)
+  //   _setAddedBooksIds(Array.from(new Set([...addedBooksIds, ...bookIds])))
+  //   try {
+  //     if (!bookIds.length) {
+  //       return
+  //     }
+  //     axios({
+  //       url: `${baseUrl}fixdata/getLastTakeMenusByNovels`,
+  //       method: 'get',
+  //       params: {
+  //         ids: bookIds
+  //       },
+  //       errorTitle: '获取错误',
+  //     }).then((res) => {
+  //       const data = res && res.data && res.data.data
+  //       if (Array.isArray(data)) {
+  //         message.success(`成功获取了 ${data.length} 条目录`)
+  //         _setAddedMenuIds(Array.from(new Set([...addedMenuIds, ...data])))
+  //       } else {
+  //         message.success(`获取失败`)
+  //       }
+  //     })
+  //   } catch (error) {
+  //     message.success(`获取失败`)
+  //     console.log(error)
+  //   }
+  // }
 
   const onSearchMenus = () => {
     if (dateMenus.length > 1) {
@@ -472,12 +487,12 @@ const SubmitSeo = () => {
   return (
     <Wrapper className="wrapper">
       <Menus name={'submitSeo'} />
-      <div className="chunk" style={{ marginBottom: 20 }}>
+      {/* <div className="chunk" style={{ marginBottom: 20 }}>
         <div>
           <Button onClick={() => onSetMenusOnline('')} style={{ marginRight: 15 }}>上线所有目录</Button>
           <Button onClick={() => onSetBooksOnline('')} style={{ marginRight: 15 }}>上线所有书本</Button>
         </div>
-      </div>
+      </div> */}
       <div className="chunk">
         <h2>提交百度收录</h2>
         <div className="content">
@@ -498,7 +513,7 @@ const SubmitSeo = () => {
             <Button onClick={onSearchMenus} style={{ marginLeft: 15 }}>查询</Button><br />
             <Button type="primary" onClick={onAddSelectedMenus} style={{ marginTop: 15 }}>添加选中目录</Button>
             <Button type="primary" onClick={onAddSelectedMenusAndOnline} style={{ marginLeft: 15, marginTop: 15 }}>添加选中目录并上线</Button>
-            <Button type="primary" onClick={onAddSelectedAllMenus} style={{ marginLeft: 15, marginTop: 15 }}>添加全部目录</Button>
+            <Button type="primary" onClick={onAddSelectedAllMenus} style={{ marginLeft: 15, marginTop: 15 }}>添加全部目录并上线</Button>
           </Form.Item>
           <Table
             rowSelection={{
@@ -528,9 +543,10 @@ const SubmitSeo = () => {
               style={{ marginLeft: 15 }}
             />
             <Button onClick={onSearchBooks} style={{ marginLeft: 15 }}>查询</Button><br />
-            <Button type="primary" onClick={onAddSelectedBooks} style={{ marginTop: 15 }}>添加选中书</Button>
-            <Button type="primary" onClick={onAddSelectedBooksAndOnline} style={{ marginLeft: 15, marginTop: 15 }}>添加选中书并上线</Button>
-            <Button type="primary" onClick={onAddSelectedBooksAndMenus} style={{ marginLeft: 15, marginTop: 15 }}>添加未上线书及其最新50个目录</Button>
+            <Button type="primary" onClick={() => onAddSelectedBooksAndOnline(true)} style={{ marginTop: 15 }}>添加选中书及全部目录并上线</Button>
+            <Button type="primary" onClick={() => onAddSelectedBooksAndOnline(false)} style={{ marginLeft: 15, marginTop: 15 }}>添加选中书及100目录并上线</Button>
+            {/* 添加全部未上线书的先下线 */}
+            {/* <Button type="primary" onClick={onAddSelectedBooksAndMenus} style={{ marginLeft: 15, marginTop: 15 }}>添加未上线书及其最新100个目录</Button> */}
           </Form.Item>
           <Table
             rowSelection={{
