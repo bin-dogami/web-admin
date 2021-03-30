@@ -4,6 +4,7 @@ import axios from '@/utils/axios';
 import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
 import styled, { createGlobalStyle } from 'styled-components';
 import { SyncOutlined } from '@ant-design/icons';
+import moment from 'moment'
 
 const Wrapper = styled.div`
 
@@ -120,6 +121,15 @@ const SpiderStatus = ({ onSearchBook }) => {
       title: '备注',
       width: 150,
       dataIndex: 'text',
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updatetime',
+      render: (updatetime, record) => {
+        return (
+          moment(updatetime).format('YYYY-MM-DD HH:mm:ss')
+        )
+      }
     },
   ];
 
@@ -251,7 +261,7 @@ const SpiderStatus = ({ onSearchBook }) => {
         <Button type="primary" style={{ marginRight: 15 }} onClick={onSpiderAll}>抓取all</Button>
         <Button type="primary" style={{ marginRight: 15 }} onClick={onCancelIsSpidering}>中断抓取</Button>
       </div>
-      <Modal width={800} title="抓取状态列表" visible={popVisible} onOk={() => setPopVisible(false)} onCancel={() => setPopVisible(false)}>
+      <Modal width={1000} title="抓取状态列表" visible={popVisible} onOk={() => setPopVisible(false)} onCancel={() => setPopVisible(false)}>
         <Radio.Group
           options={statusList2}
           onChange={onSwitchStatus}
