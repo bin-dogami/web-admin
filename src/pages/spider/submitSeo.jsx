@@ -34,9 +34,9 @@ const Wrapper = styled.div`
 
 const submitSeoKey = 'seo-submit-key'
 const maxSubmitCountOneTime = 2000
+const dateFormat = 'YYYY-MM-DD'
 const startDate = moment().subtract(1, 'd')
 const endDate = moment().add(1, 'd')
-const dateFormat = 'YYYY-MM-DD'
 const onlineOptions = [
   {
     label: '全部',
@@ -530,7 +530,7 @@ const SubmitSeo = () => {
           />
           <Form.Item label="书本查询">
             <RangePicker
-              value={dateBooks}
+              defaultValue={dateBooks}
               format={dateFormat}
               onChange={(date, dateString) => setDateBooks(dateString)}
             />
