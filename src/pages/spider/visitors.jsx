@@ -7,8 +7,7 @@ import { Spin } from 'antd';
 import Menus from '@/components/Menu.jsx'
 import moment from 'moment';
 
-// const { RangePicker } = DatePicker;
-// const { TextArea } = Input;
+const { RangePicker } = DatePicker;
 
 const Wrapper = styled.div`
   padding-bottom: 50px;
@@ -32,10 +31,57 @@ const Wrapper = styled.div`
   }
 `;
 
+const NoWrap = styled.div`
+  p {
+    white-space: nowrap;
+    margin: 0;
+  }
+`
+
+const dateFormat = 'YYYY-MM-DD'
+const startDate = moment().subtract(1, 'd')
+const endDate = moment().add(1, 'd')
+const hostOptions = [
+  {
+    label: '全部',
+    value: '',
+  },
+  {
+    label: 'm',
+    value: 'm',
+  },
+  {
+    label: 'admin',
+    value: 'admin',
+  },
+]
+const spiderOptions = [
+  {
+    label: '全部',
+    value: '1',
+  },
+  {
+    label: '只看spider',
+    value: '2',
+  },
+  {
+    label: '不看spider',
+    value: '3',
+  },
+]
+
 const Visitors = () => {
   const [loading, setLoading] = useState(false)
   const [collectLoading, setCollectLoading] = useState(false)
+  const [date, setDate] = useState([moment(startDate, dateFormat), moment(endDate, dateFormat)])
+  const [host, sethost] = useState('m')
+  const [spider, setSpider] = useState('1')
+  const [skip, setSkip] = useState(1)
+  const [size, setSize] = useState(100)
+  const [total, setTotal] = useState(0)
   const [data, setData] = useState([])
+  const [spiderFilters, setSpiderFilters] = useState([])
+  const [ipFilters, setIpFilters] = useState([])
 
   const collectLogs = () => {
     if (collectLoading) {
@@ -46,16 +92,14 @@ const Visitors = () => {
       axios({
         url: `${baseUrl}fixdata/collectNginxLogs`,
         method: 'get',
-        params: {
-          // skip: (_skip - 1) * _size,
-          // size: _size,
-        },
+        // params: {
+        // },
         errorTitle: '获取错误',
       }).then((res) => {
         setCollectLoading(false)
         const data = res && res.data && res.data.data
         message.info(typeof data === 'string' ? data : '收集完成')
-        getList()
+        getList(skip, size, host, spider)
       })
     } catch (e) {
       setCollectLoading(false)
@@ -63,24 +107,44 @@ const Visitors = () => {
     }
   }
 
-  const getList = () => {
+  const getList = (_skip, _size, host, spider) => {
     if (loading) {
       return
     }
+    setSkip(_skip)
+    setSize(_size)
     try {
       setLoading(true)
       axios({
-        url: `${baseUrl}fixdata/getVisitors`,
+        url: `${baseUrl}fixdata/getVisitorsList`,
         method: 'get',
         params: {
-          // skip: (_skip - 1) * _size,
-          // size: _size,
+          skip: (_skip - 1) * _size,
+          size: _size,
+          sDate: moment(date[0]).format(dateFormat),
+          eDate: moment(date[1]).format(dateFormat),
+          host,
+          spider
         },
         errorTitle: '获取错误',
       }).then((res) => {
         setLoading(false)
-        // const [data, total] = res && res.data && Array.isArray(res.data.data) && res.data.data.length > 1 ? res.data.data : [[], 0];
-        setData(res && res.data && Array.isArray(res.data.data) ? res.data.data : []);
+        const [data, count] = res && res.data && Array.isArray(res.data.data) && res.data.data.length > 1 ? res.data.data : [[], 0];
+        setData(data);
+        if (count.length) {
+          setTotal(+count[0].total)
+        }
+
+        const _data = Array.from(new Set(data.map(({ spider }) => spider))).map((spider) => ({
+          text: spider,
+          value: spider,
+        }))
+        setSpiderFilters(_data)
+        const _data2 = Array.from(new Set(data.map(({ ip }) => ip))).map((ip) => ({
+          text: ip,
+          value: ip,
+        }))
+        setIpFilters(_data2)
       })
     } catch (e) {
       setLoading(false)
@@ -99,13 +163,20 @@ const Visitors = () => {
         )
       }
     },
-    {
-      title: 'id',
-      dataIndex: 'id',
-    },
+    // {
+    //   title: 'id',
+    //   dataIndex: 'id',
+    // },
     {
       title: '访问时间',
       dataIndex: 'ctime',
+      render: (ctime) => {
+        return (
+          <NoWrap>
+            {ctime.split(' ').map((t, key) => <p key={key}>{t}</p>)}
+          </NoWrap>
+        )
+      }
     },
     {
       title: 'host',
@@ -123,10 +194,16 @@ const Visitors = () => {
     {
       title: '爬虫',
       dataIndex: 'spider',
+      filters: spiderFilters,
+      onFilter: (value, record) => record.spider === value,
+      sortDirections: ['descend'],
     },
     {
       title: 'ip',
       dataIndex: 'ip',
+      filters: ipFilters,
+      onFilter: (value, record) => record.ip === value,
+      sortDirections: ['descend'],
     },
     {
       title: 'referer',
@@ -154,27 +231,41 @@ const Visitors = () => {
     },
   ]
 
-  // const pagination = {
-  //   current: skip,
-  //   pageSize: size,
-  //   total: total,
-  //   showTotal: total => `共 ${total} 条`,
-  //   showSizeChanger: true,
-  // };
+  const pagination = {
+    position: ['topLeft', 'bottomLeft'],
+    pageSizeOptions: [50, 100, 500, 1000, 3000],
+    current: skip,
+    pageSize: size,
+    total: total,
+    showTotal: total => `共 ${total} 条`,
+    showSizeChanger: true,
+  };
 
-  // const onChange = (e) => {
-  //   const desc = e.target.value
-  //   setIsDesc(desc)
-  //   getList(1, size, desc)
-  // }
+  const onChange = (e) => {
+    const host = e.target.value
+    sethost(host)
+    getList(1, size, host, spider)
+  }
 
-  // const onTableChange = (pagination) => {
-  //   getList(pagination.current || 1, pagination.pageSize || size, isDesc);
-  // };
+  const onChangeSpider = (e) => {
+    const spider = e.target.value
+    setSpider(spider)
+    getList(1, size, host, spider)
+  }
+
+  const onTableChange = (pagination) => {
+    if (pagination.current !== skip || pagination.pageSize !== size) {
+      getList(pagination.current || 1, pagination.pageSize || size, host, spider);
+    }
+  };
 
   useEffect(() => {
-    getList()
+    getList(skip, size, host, spider)
   }, [])
+
+  const onSearch = () => {
+    getList(skip, size, host, spider)
+  }
 
   const rowKey = (record) => {
     return record.id
@@ -190,25 +281,35 @@ const Visitors = () => {
         <h2>查看用户访问设备信息</h2>
         <div className="content">
           <Form.Item label="查询">
-            {/* <RangePicker
-              defaultValue={dateMenus}
+            <RangePicker
+              defaultValue={date}
               format={dateFormat}
-              onChange={(date, dateString) => setDateMenus(dateString)}
-            /> */}
-            {/* <Radio.Group
-              options={onlineOptions}
-              onChange={e => setMOnline(e.target.value)}
-              value={mOnline}
+              onChange={(date, dateString) => setDate(dateString)}
+            />
+            <Radio.Group
+              options={hostOptions}
+              onChange={onChange}
+              value={host}
               optionType="button"
               buttonStyle="solid"
               style={{ marginLeft: 15 }}
-            /> */}
-            <Button loading={loading} type="primary" onClick={() => getList()} style={{ marginRight: 15 }}>查询</Button>
+            />
+            <Radio.Group
+              options={spiderOptions}
+              onChange={onChangeSpider}
+              value={spider}
+              optionType="button"
+              buttonStyle="solid"
+              style={{ marginLeft: 15 }}
+            />
+            <Button loading={loading} type="primary" onClick={onSearch} style={{ marginLeft: 15 }}>查询</Button>
           </Form.Item>
           <Table
             dataSource={data}
             loading={loading}
             columns={columns}
+            pagination={pagination}
+            onChange={onTableChange}
             rowKey={rowKey}
           />
         </div>
