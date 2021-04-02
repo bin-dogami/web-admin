@@ -203,6 +203,18 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
       }
     },
     {
+      title: '是否推荐',
+      width: 80,
+      dataIndex: 'isRecommend',
+      render: (isRecommend, record) => {
+        return (
+          <>
+            <span>{isRecommend ? '是' : '否'}</span>
+          </>
+        )
+      }
+    },
+    {
       title: '上线否',
       width: 60,
       dataIndex: 'isOnline',

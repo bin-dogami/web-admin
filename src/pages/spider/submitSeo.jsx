@@ -57,6 +57,7 @@ const SubmitSeo = () => {
   // @TODO: 收录名额用完后（提交收录前要先确认有没有问题），然后把 还没上线的目录和书 都上了吧
   // 已提交完的记录下，下次再提交时去掉重复的
   const submitedIds = useRef({})
+  const [createSitemapLoading, setCreateSitemapLoading] = useState(false)
 
   // 目录的
   const [mOnline, setMOnline] = useState('2')
@@ -484,15 +485,41 @@ const SubmitSeo = () => {
     onSearchBooks()
   }, [bOnline])
 
+  const onCreateSiteMap = () => {
+    if (createSitemapLoading) {
+      return
+    }
+    try {
+      setCreateSitemapLoading(true)
+      axios({
+        url: `${baseUrl}fixdata/createSitemap`,
+        method: 'get',
+        errorTitle: '生成错误',
+      }).then((res) => {
+        setCreateSitemapLoading(false)
+        const data = res && res.data && res.data.data
+        if (typeof data === 'string') {
+          message.info(data)
+        } else {
+          message.error('服务器出错了?')
+        }
+      })
+    } catch (error) {
+      setCreateSitemapLoading(false)
+      console.log(error)
+    }
+  }
+
   return (
     <Wrapper className="wrapper">
       <Menus name={'submitSeo'} />
-      {/* <div className="chunk" style={{ marginBottom: 20 }}>
+      <div className="chunk" style={{ marginBottom: 20 }}>
         <div>
-          <Button onClick={() => onSetMenusOnline('')} style={{ marginRight: 15 }}>上线所有目录</Button>
-          <Button onClick={() => onSetBooksOnline('')} style={{ marginRight: 15 }}>上线所有书本</Button>
+          <Button onClick={onCreateSiteMap} loading={createSitemapLoading} style={{ marginRight: 15 }}>生成sitemap文件</Button>
+          {/* <Button onClick={() => onSetMenusOnline('')} style={{ marginRight: 15 }}>上线所有目录</Button>
+          <Button onClick={() => onSetBooksOnline('')} style={{ marginRight: 15 }}>上线所有书本</Button> */}
         </div>
-      </div> */}
+      </div>
       <div className="chunk">
         <h2>提交百度收录</h2>
         <div className="content">
