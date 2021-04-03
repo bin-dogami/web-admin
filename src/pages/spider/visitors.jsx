@@ -82,6 +82,7 @@ const Visitors = () => {
   const [data, setData] = useState([])
   const [spiderFilters, setSpiderFilters] = useState([])
   const [ipFilters, setIpFilters] = useState([])
+  const [noApi, setNoApi] = useState('1')
 
   const collectLogs = () => {
     if (collectLoading) {
@@ -130,17 +131,18 @@ const Visitors = () => {
       }).then((res) => {
         setLoading(false)
         const [data, count] = res && res.data && Array.isArray(res.data.data) && res.data.data.length > 1 ? res.data.data : [[], 0];
-        setData(data);
+        const fData = noApi ? data.filter(({ url }) => !url.includes('/scan/') && !url.includes('/fixdata/')) : data
+        setData(fData)
         if (count.length) {
           setTotal(+count[0].total)
         }
 
-        const _data = Array.from(new Set(data.map(({ spider }) => spider))).map((spider) => ({
+        const _data = Array.from(new Set(fData.map(({ spider }) => spider))).map((spider) => ({
           text: spider,
           value: spider,
         }))
         setSpiderFilters(_data)
-        const _data2 = Array.from(new Set(data.map(({ ip }) => ip))).map((ip) => ({
+        const _data2 = Array.from(new Set(fData.map(({ ip }) => ip))).map((ip) => ({
           text: ip,
           value: ip,
         }))
@@ -253,6 +255,10 @@ const Visitors = () => {
     getList(1, size, host, spider)
   }
 
+  const onChangeNoApi = (e) => {
+    setNoApi(e.target.value)
+  }
+
   const onTableChange = (pagination) => {
     if (pagination.current !== skip || pagination.pageSize !== size) {
       getList(pagination.current || 1, pagination.pageSize || size, host, spider);
@@ -298,6 +304,14 @@ const Visitors = () => {
               options={spiderOptions}
               onChange={onChangeSpider}
               value={spider}
+              optionType="button"
+              buttonStyle="solid"
+              style={{ marginLeft: 15 }}
+            />
+            <Radio.Group
+              options={[{ value: '0', label: '全看' }, { value: '1', label: '不看api' }]}
+              onChange={onChangeNoApi}
+              value={noApi}
               optionType="button"
               buttonStyle="solid"
               style={{ marginLeft: 15 }}

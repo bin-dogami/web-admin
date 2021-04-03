@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback, useState } from 'react';
+import React, { useEffect, useMemo, useCallback, useState, useRef } from 'react';
 import { Button, Modal, Table, Select, Radio, message } from 'antd';
 import axios from '@/utils/axios';
 import { baseUrl, scanUrl, onCopyHref } from '@/utils/index';
@@ -19,8 +19,13 @@ const SpiderStatus = ({ onSearchBook }) => {
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState(-1);
   const [statusList, setStatusList] = useState([]);
+  const statusListRef = useRef([])
   const [statusList2, setStatusList2] = useState([]);
   const [data, setData] = useState([]);
+
+  useEffect(() => {
+    statusListRef.current = statusList
+  }, [statusList])
 
   const onChangeStatus = id => e => {
     const status = e.target.value
@@ -133,6 +138,10 @@ const SpiderStatus = ({ onSearchBook }) => {
     },
   ];
 
+  if (status === '4') {
+    columns.splice(4, 1)
+  }
+
   const getList = (_status) => {
     try {
       setLoading(true)
@@ -169,6 +178,7 @@ const SpiderStatus = ({ onSearchBook }) => {
           item.value = +item.value
         })
         setStatusList(data);
+        setStatus('1')
       })
     } catch (e) {
       console.log(e)
@@ -179,14 +189,13 @@ const SpiderStatus = ({ onSearchBook }) => {
     setStatus(e.target.value)
   }
 
-
   useEffect(() => {
     getStatus()
   }, [])
 
   useEffect(() => {
-    getList(status)
-  }, [status])
+    popVisible && statusListRef.current.length && getList(status)
+  }, [popVisible, status])
 
   const rowKey = (record) => {
     return record.id

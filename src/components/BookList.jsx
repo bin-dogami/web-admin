@@ -248,7 +248,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
       render: (from, record) => {
         return (
           <>
-            <a data-href={from} onClick={onCopyHref}>复制链接</a>
+            {record.spiderCode === 4 ? '没有' : <a data-href={from} onClick={onCopyHref}>复制链接</a>}
           </>
         )
       }
@@ -281,10 +281,14 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
         return (
           <>
             <a className="viewMenus" type="primary" shape="round" size={'middle'} onClick={onViewMenus(record)}>目录list</a>
-            <div style={{ display: 'inline-block', margin: '0 15px' }}>
-              <ModifyAction id={record.id} name={"completeSpiderAllMenus"} modifyFnName={onCompleteMenusAll} html="全抓了" />
-            </div>
-            <ModifyAction id={record.from} name={"respider"} modifyFnName={onSpider} html="再抓" />
+            {record.spiderCode === 4 ? null :
+              <>
+                <div style={{ display: 'inline-block', margin: '0 15px' }}>
+                  <ModifyAction id={record.id} name={"completeSpiderAllMenus"} modifyFnName={onCompleteMenusAll} html="全抓了" />
+                </div>
+                <ModifyAction id={record.from} name={"respider"} modifyFnName={onSpider} html="再抓" />
+              </>
+            }
             <div style={{ display: 'inline-block', margin: '0 0 0 15px' }}>
               <ModifyAction id={record.id} status={tumorList} name={"clearBookContents"} modifyFnName={onFixPagesContent} html="清理" />
             </div>

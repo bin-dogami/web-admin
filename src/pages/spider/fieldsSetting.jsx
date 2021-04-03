@@ -606,7 +606,7 @@ const FailedPages = () => {
     <Wrapper className="wrapper">
       <GlobalStyle />
       <Menus name={'fieldsSetting'} />
-      <GetDatas />
+      <GetDatas onSearchBook={onSearchBook} />
       <SpiderStatus onSearchBook={onSearchBook} />
       <BookList onSearchBook={onSearchBook} setBookInfo={setBookInfo} onSpider={onSpider} menusPopVisible={menusPopVisible} setMenusPopVisible={setMenusPopVisible} />
       <MenuList book={bookInfo} visible={menusPopVisible} setVisible={setMenusPopVisible} />
