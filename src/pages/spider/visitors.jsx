@@ -131,7 +131,7 @@ const Visitors = () => {
       }).then((res) => {
         setLoading(false)
         const [data, count] = res && res.data && Array.isArray(res.data.data) && res.data.data.length > 1 ? res.data.data : [[], 0];
-        const fData = noApi ? data.filter(({ url }) => !url.includes('/scan/') && !url.includes('/fixdata/')) : data
+        const fData = noApi === '1' ? data.filter(({ url }) => !url.includes('/scan/') && !url.includes('/fixdata/')) : data
         setData(fData)
         if (count.length) {
           setTotal(+count[0].total)
