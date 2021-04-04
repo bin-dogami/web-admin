@@ -640,6 +640,7 @@ const FailedPages = () => {
                   <ModifyAction id={bookInfo.id} html="删除本书" name={"deleteBook"} modifyFnName={onDeleteBook} />
                   <Button className="viewMenus" type="primary" shape="round" size={'middle'} onClick={() => setMenusPopVisible(1)}>查看目录list</Button>
                 </li>
+                <li><strong>是否上线: </strong><span>{bookInfo.isOnline ? '上了' : '没上'}</span></li>
                 <li>
                   <strong>是否热门推荐: </strong>
                   <span>{bookInfo.isRecommend ? '是' : '否'}</span>
