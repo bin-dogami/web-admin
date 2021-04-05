@@ -12,6 +12,7 @@ import GetDatas from '@/components/GetDatas.jsx'
 import SpiderStatus from '@/components/SpiderStatus.jsx'
 import MenuList from '@/components/MenuList.jsx'
 import UploadImg from '@/components/UploadImg.jsx'
+import ModifyType from '@/components/ModifyType.jsx'
 
 const GlobalStyle = createGlobalStyle`
   .modifyField {
@@ -640,7 +641,8 @@ const FailedPages = () => {
                 <li>
                   <strong>小说Id: </strong><span>{bookInfo.id}</span>
                   <ModifyAction id={bookInfo.id} html="删除本书" name={"deleteBook"} modifyFnName={onDeleteBook} />
-                  <Button className="viewMenus" type="primary" shape="round" size={'middle'} onClick={() => setMenusPopVisible(1)}>查看目录list</Button>
+                  <Button className="viewMenus" type="primary" size={'middle'} onClick={() => setMenusPopVisible(1)}>查看目录list</Button>
+                  <Button className="viewMenus" type="link" size={'middle'} target="_blank" href={`/menuList/${bookInfo.id}`}>去目录页</Button>
                 </li>
                 <li><strong>是否上线: </strong><span>{bookInfo.isOnline ? '上了' : '没上'}</span></li>
                 <li>
@@ -660,10 +662,10 @@ const FailedPages = () => {
                 </li>
                 <li><strong>访问量: </strong><span>{bookInfo.viewnum}</span></li>
                 <li><strong>章节总数: </strong><span>{bookInfo.menusLen} 章</span></li>
-                <li><strong>类型: </strong><span>{bookInfo.typename}</span></li>
+                <li><strong>类型: </strong><span>{bookInfo.typename}</span><ModifyType id={bookInfo.id} type={bookInfo.typeid} onSearchBook={onSearchBook} /></li>
                 <li>
                   <strong>类型Id: </strong><span>{bookInfo.typeid}</span>
-                  <ModifyAction id={bookInfo.id} name={"typeid"} modifyFnName={() => { }} />
+                  {/* <ModifyAction id={bookInfo.id} name={"typeid"} modifyFnName={() => { }} /> */}
                 </li>
                 <li><strong>作者: </strong><span>{bookInfo.author}</span></li>
                 <li>

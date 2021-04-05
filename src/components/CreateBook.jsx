@@ -17,7 +17,6 @@ const CreateBook = ({ visible, setVisible, onSearchBook }) => {
   const [creating, setCreating] = useState(false)
 
   const [typeOptions, setTypeOptions] = useState([])
-  const typeOptionsRef = useRef([])
   const getTypes = () => {
     try {
       axios({
@@ -103,15 +102,8 @@ const CreateBook = ({ visible, setVisible, onSearchBook }) => {
   }
 
   useEffect(() => {
-    if (typeOptionsRef.current.length) {
-      return
-    }
     visible && getTypes()
   }, [visible])
-
-  useEffect(() => {
-    typeOptionsRef.current = typeOptions
-  }, [typeOptions])
 
   const initialValues = {
     title: '',
@@ -214,7 +206,6 @@ const CreateBook = ({ visible, setVisible, onSearchBook }) => {
         onOk={onOk}
         confirmLoading={creating}
         okText="确定"
-      // okButtonProps={{ disabled: btnDisable }}
       >
         <Form name="form" form={form} onFinish={onFinish} onValuesChange={onValuesChange} initialValues={initialValues} colon={false}>
           <Form.Item
