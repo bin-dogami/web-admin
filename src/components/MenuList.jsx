@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback, useState } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { Button, Modal, Table, message, Radio } from 'antd';
 import { SortAscendingOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from '@/utils/axios';
@@ -25,7 +25,32 @@ const AbNormals = styled.div`
   }
 `
 
-const MenuList = ({ book, visible, setVisible }) => {
+const useStateRef = (data, skip, size, isDesc) => {
+  const dataRef = useRef(data)
+  const skipRef = useRef(skip)
+  const sizeRef = useRef(size)
+  const isDescRef = useRef(isDesc)
+
+  useEffect(() => {
+    skipRef.current = skip
+  }, [skip])
+
+  useEffect(() => {
+    sizeRef.current = size
+  }, [size])
+
+  useEffect(() => {
+    isDescRef.current = isDesc
+  }, [isDesc])
+
+  useEffect(() => {
+    dataRef.current = data
+  }, [data])
+
+  return [dataRef, skipRef, sizeRef, isDescRef]
+}
+
+const MenuList = ({ book, visible, isPage, onAddMenu, triggerReLoading, viewContent, toPrevOrNext }) => {
   const [isDesc, setIsDesc] = useState(false)
   const [skip, setSkip] = useState(1)
   const [size, setSize] = useState(50)
@@ -33,6 +58,8 @@ const MenuList = ({ book, visible, setVisible }) => {
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState([])
   const [abNormalIndexs, setAbNormalIndexs] = useState([])
+
+  const [dataRef, skipRef, sizeRef, isDescRef] = useStateRef(data, skip, size, isDesc)
 
   const onModifyMenu = (id, fieldName, fieldValue) => () => {
     try {
@@ -249,6 +276,22 @@ const MenuList = ({ book, visible, setVisible }) => {
     }
   ]
 
+  if (isPage) {
+    columns.push({
+      title: '操作',
+      width: 120,
+      dataIndex: 'handler',
+      render: (text, record) => {
+        return (
+          <>
+            <a className="viewMenus" style={{ display: 'inline-block', marginRight: '15px' }} type="primary" shape="round" size={'middle'} onClick={onAddMenu(record.id)}>在本章后添加目录</a>
+            <a className="viewMenus" style={{ display: 'inline-block', marginRight: '15px' }} type="primary" shape="round" size={'middle'} onClick={viewContent(record)}>查看内容</a>
+          </>
+        )
+      }
+    })
+  }
+
   const pagination = {
     current: skip,
     pageSize: size,
@@ -272,34 +315,54 @@ const MenuList = ({ book, visible, setVisible }) => {
     visible && getList(1, size, visible === 2 ? true : isDesc)
   }, [visible])
 
+  useEffect(() => {
+    getList(skipRef.current, sizeRef.current, isDescRef.current)
+  }, [triggerReLoading])
+
+  useEffect(() => {
+    if (toPrevOrNext) {
+      const _data = dataRef.current
+      for (var i in _data) {
+        const item = _data[i]
+        if (item.id === toPrevOrNext.id) {
+          const target = _data[+i + toPrevOrNext.plus]
+          if (target) {
+            viewContent(target)()
+          } else {
+            message.error(toPrevOrNext.plus > 0 ? '后面没有了' : '前面没有了')
+          }
+          break
+        }
+      }
+    }
+  }, [toPrevOrNext])
+
   const rowKey = (record) => {
     return record.id
   }
 
   return (
     <>
-      <Modal width={800} title="目录列表" visible={visible} onOk={() => setVisible(0)} onCancel={() => setVisible(0)}>
-        <div style={{ marginBottom: 20 }}>
-          <Radio.Group onChange={onChange} value={isDesc} style={{ marginRight: 30 }}>
-            <Radio value={true}>倒序</Radio>
-            <Radio value={false}>正序</Radio>
-          </Radio.Group>
-          <Button type="primary" size={'middle'} onClick={onDetectIndexAbnormal} style={{ marginRight: 15 }}>index是否异常</Button>
-          {book ? <a data-href={book.from} onClick={onCopyHref} style={{ marginRight: 20, display: 'inline-block' }}>{book.title}</a> : null}
-          <Button type="primary" onClick={() => getList(skip, size, isDesc)}><SyncOutlined spin={loading} /></Button>
-        </div>
-        {abNormalIndexs.length ? (
-          <AbNormals>
-            <h3>有问题的index目录: </h3>
-            <ul>
-              {abNormalIndexs.map(({ id, index, mname, lastId, lastIndex, lastMname, }) => (
-                <li key={id}><span>第{index}章 {mname} 【{id}】</span> (上一章：{lastIndex} {lastMname} 【{lastId}】)</li>
-              ))}
-            </ul>
-          </AbNormals>
-        ) : null}
-        <Table dataSource={data} size={'small'} pagination={pagination} onChange={onTableChange} loading={loading} columns={columns} rowKey={rowKey} />
-      </Modal>
+      <div style={{ marginBottom: 20 }}>
+        <Radio.Group onChange={onChange} value={isDesc} style={{ marginRight: 30 }}>
+          <Radio value={true}>倒序</Radio>
+          <Radio value={false}>正序</Radio>
+        </Radio.Group>
+        <Button type="primary" size={'middle'} onClick={onDetectIndexAbnormal} style={{ marginRight: 15 }}>index是否异常</Button>
+        {book ? <a data-href={book.from} onClick={onCopyHref} style={{ marginRight: 20, display: 'inline-block' }}>{book.title}</a> : null}
+        <Button type="primary" onClick={() => getList(skip, size, isDesc)}><SyncOutlined spin={loading} /></Button>
+      </div>
+      {abNormalIndexs.length ? (
+        <AbNormals>
+          <h3>有问题的index目录: </h3>
+          <ul>
+            {abNormalIndexs.map(({ id, index, mname, lastId, lastIndex, lastMname, }) => (
+              <li key={id}><span>第{index}章 {mname} 【{id}】</span> (上一章：{lastIndex} {lastMname} 【{lastId}】)</li>
+            ))}
+          </ul>
+        </AbNormals>
+      ) : null}
+      <Table dataSource={data} size={'small'} pagination={pagination} onChange={onTableChange} loading={loading} columns={columns} rowKey={rowKey} />
     </>
   )
 }

@@ -609,7 +609,9 @@ const FailedPages = () => {
       <GetDatas onSearchBook={onSearchBook} />
       <SpiderStatus onSearchBook={onSearchBook} />
       <BookList onSearchBook={onSearchBook} setBookInfo={setBookInfo} onSpider={onSpider} menusPopVisible={menusPopVisible} setMenusPopVisible={setMenusPopVisible} />
-      <MenuList book={bookInfo} visible={menusPopVisible} setVisible={setMenusPopVisible} />
+      <Modal width={800} title="目录列表" visible={menusPopVisible} onOk={() => setMenusPopVisible(0)} onCancel={() => setMenusPopVisible(0)}>
+        <MenuList book={bookInfo} visible={menusPopVisible} />
+      </Modal>
       <div className="chunk" id="novel">
         <h2>novel字段</h2>
         <div className="content">

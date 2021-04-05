@@ -280,16 +280,17 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
       render: (text, record) => {
         return (
           <>
-            <a className="viewMenus" type="primary" shape="round" size={'middle'} onClick={onViewMenus(record)}>目录list</a>
+            <a className="viewMenus" style={{ display: 'inline-block', marginRight: '15px' }} type="primary" shape="round" size={'middle'} onClick={onViewMenus(record)}>目录list</a>
+            <a className="viewMenus" style={{ display: 'inline-block', marginRight: '15px' }} href={`/menuList/${record.id}`} target="_blank">目录页</a>
             {record.spiderCode === 4 ? null :
               <>
-                <div style={{ display: 'inline-block', margin: '0 15px' }}>
+                <div style={{ display: 'inline-block', marginRight: '15px' }}>
                   <ModifyAction id={record.id} name={"completeSpiderAllMenus"} modifyFnName={onCompleteMenusAll} html="全抓了" />
                 </div>
                 <ModifyAction id={record.from} name={"respider"} modifyFnName={onSpider} html="再抓" />
               </>
             }
-            <div style={{ display: 'inline-block', margin: '0 0 0 15px' }}>
+            <div style={{ display: 'inline-block', marginRight: '15px' }}>
               <ModifyAction id={record.id} status={tumorList} name={"clearBookContents"} modifyFnName={onFixPagesContent} html="清理" />
             </div>
           </>

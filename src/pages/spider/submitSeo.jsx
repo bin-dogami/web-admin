@@ -91,7 +91,7 @@ const SubmitSeo = () => {
     _list.length < list.length && message.warn(`有 ${list.length - _list.length} 本书重复了～`)
     setAddedBooksIds(_list)
   }
-  const [dateBooks, setDateBooks] = useState([moment(startDate, dateFormat), moment(endDate, dateFormat)])
+  const [dateBooks, setDateBooks] = useState(['', ''])
   const [booksLoading, setbooksLoading] = useState(false)
 
   const onSetMenusOnline = (ids) => {
@@ -107,7 +107,9 @@ const SubmitSeo = () => {
         // @TODO: 返回的数据有哪些成功了，哪些成功哪些不成功可以弄一下，但不重要
         const data = res && res.data && res.data.data
         if (typeof data === 'string') {
-          message.info(data || '设置完成')
+          Modal.info({
+            title: data || '设置完成'
+          })
         }
       })
     } catch (error) {
@@ -216,8 +218,8 @@ const SubmitSeo = () => {
           url: `${baseUrl}fixdata/getMenusByCreateDate`,
           method: 'get',
           params: {
-            sDate: moment(dateMenus[0]).format(dateFormat),
-            eDate: moment(dateMenus[1]).format(dateFormat),
+            sDate: dateMenus[0] ? moment(dateMenus[0]).format(dateFormat) : '',
+            eDate: dateMenus[1] ? moment(dateMenus[1]).format(dateFormat) : '',
             online: mOnline,
           },
           errorTitle: '获取错误',
@@ -244,8 +246,8 @@ const SubmitSeo = () => {
           url: `${baseUrl}fixdata/getBooksByCreateDate`,
           method: 'get',
           params: {
-            sDate: moment(dateBooks[0]).format(dateFormat),
-            eDate: moment(dateBooks[1]).format(dateFormat),
+            sDate: dateBooks[0] ? moment(dateBooks[0]).format(dateFormat) : '',
+            eDate: dateBooks[1] ? moment(dateBooks[1]).format(dateFormat) : '',
             online: bOnline,
           },
           errorTitle: '获取错误',
@@ -557,7 +559,7 @@ const SubmitSeo = () => {
           />
           <Form.Item label="书本查询">
             <RangePicker
-              defaultValue={dateBooks}
+              // defaultValue={dateBooks}
               format={dateFormat}
               onChange={(date, dateString) => setDateBooks(dateString)}
             />
