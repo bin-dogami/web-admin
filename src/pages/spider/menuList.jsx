@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Modal, Button, message, Form, Input } from 'antd';
 import {
   LeftOutlined,
@@ -43,6 +43,7 @@ const MenuPage = (props) => {
 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false)
+  const contentRef = useRef(null)
 
   const [triggerReLoading, setTriggerReLoading] = useState(0)
 
@@ -75,7 +76,7 @@ const MenuPage = (props) => {
           if (data && 'id' in data) {
             message.success(data.msg)
             form.resetFields()
-            closePop()
+            // closePop()
             setTriggerReLoading(triggerReLoading + 1)
           } else {
             message.error('创建失败')
@@ -140,10 +141,56 @@ const MenuPage = (props) => {
     })
   }
 
+  const numMap = {
+    '零': 0,
+    '一': 1,
+    '二': 2,
+    '三': 3,
+    '四': 4,
+    '五': 5,
+    '六': 6,
+    '七': 7,
+    '八': 8,
+    '九': 9,
+    '两': 2
+  }
+  // const powMap = {
+  //   '十': '',
+  //   '百': '',
+  //   '千': '',
+  //   '万': '',
+  // }
+
   const onValuesChange = (changedValues, allValues) => {
-    // if ('typeid' in changedValues) {
-    //   form.setFieldsValue({ typename: typeOptions.filter(({ value }) => value == changedValues.typeid)[0].label })
-    // }
+    if ('mname' in changedValues) {
+      // nothing
+    }
+  }
+
+  const onNameChange = () => {
+    setTimeout(() => {
+      const mname = form.getFieldValue('mname')
+      let match = null
+      if (/第[^章\s]+章.*/.test(mname)) {
+        match = mname.match(/第([^章\s]+)章/)
+
+      } else if (/^[^章\s]+章.*/.test(mname)) {
+        match = mname.match(/([^章\s]+)章/)
+      }
+
+      if (match && match.length > 1) {
+        let index = match[1].replace(/[零一二两三四五六七八九十百千万]/g, ($1) => {
+          return $1 in numMap ? numMap[$1] : ''
+        })
+        try {
+          index = +index
+          form.setFieldsValue({ index })
+        } catch (error) {
+
+        }
+      }
+      contentRef.current.focus()
+    }, 300);
   }
 
   const getBookInfo = (id) => {
@@ -226,19 +273,41 @@ const MenuPage = (props) => {
   };
 
   const [toPrevOrNext, setToPrevOrNext] = useState(null)
-  const toPrev = () => {
+  const toPrev = (id) => {
     setToPrevOrNext({
-      id: contentPopData.id,
+      id: id || contentPopData.id,
       plus: -1
     })
   }
 
-  const toNext = () => {
+  const toNext = (id) => {
     setToPrevOrNext({
-      id: contentPopData.id,
+      id: id || contentPopData.id,
       plus: 1
     })
   }
+
+  const contentPopDataRef = useRef(contentPopData)
+  useEffect(() => {
+    contentPopDataRef.current = contentPopData
+  }, [contentPopData])
+
+  const keydownEvent = (e) => {
+    if (contentPopDataRef.current) {
+      if ([39, 40].includes(e.keyCode)) {
+        toNext(contentPopDataRef.current.id)
+      } else if ([37, 38].includes(e.keyCode)) {
+        toPrev(contentPopDataRef.current.id)
+      }
+    }
+  }
+  useEffect(() => {
+    document.documentElement.addEventListener('keydown', keydownEvent)
+
+    return () => {
+      document.documentElement.removeEventListener('keydown', keydownEvent)
+    }
+  }, [])
 
   return (
     <Wrapper className="wrapper">
@@ -252,7 +321,7 @@ const MenuPage = (props) => {
             name="mname"
             rules={[{ required: true, message: '必填' }]}
           >
-            <Input />
+            <Input onPaste={onNameChange} onBlur={onNameChange} />
           </Form.Item>
           <Form.Item
             label="index"
@@ -266,7 +335,7 @@ const MenuPage = (props) => {
             name="content"
             rules={[{ required: true, message: '必填' }]}
           >
-            <Input.TextArea showCount autoSize={{ minRows: 10 }} />
+            <Input.TextArea ref={contentRef} showCount autoSize={{ minRows: 10 }} />
           </Form.Item>
         </Form>
       </Modal> : null}
@@ -280,8 +349,8 @@ const MenuPage = (props) => {
             <li style={{ marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div><strong>名称：</strong>{contentPopData.index}章 {contentPopData.mname}</div>
               <div>
-                <Button icon={<LeftOutlined />} onClick={toPrev} />
-                <Button icon={<RightOutlined />} onClick={toNext} />
+                <Button icon={<LeftOutlined />} onClick={() => toPrev()} />
+                <Button icon={<RightOutlined />} onClick={() => toNext()} />
               </div>
             </li>
             <li>
