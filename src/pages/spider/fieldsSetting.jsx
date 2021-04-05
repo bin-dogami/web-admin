@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { Form, Input, InputNumber, Button, message, Modal, Empty, Tooltip, Table } from 'antd';
-
 import styled, { createGlobalStyle } from 'styled-components';
 import axios from '@/utils/axios';
 import moment from 'moment';
@@ -12,6 +11,7 @@ import BookList from '@/components/BookList.jsx'
 import GetDatas from '@/components/GetDatas.jsx'
 import SpiderStatus from '@/components/SpiderStatus.jsx'
 import MenuList from '@/components/MenuList.jsx'
+import UploadImg from '@/components/UploadImg.jsx'
 
 const GlobalStyle = createGlobalStyle`
   .modifyField {
@@ -680,6 +680,7 @@ const FailedPages = () => {
                 </li>
                 <li><strong>创建时间: </strong><span>{moment(bookInfo.ctime).format('YYYY-MM-DD')}</span></li>
                 <li><strong>更新时间: </strong><span>{moment(bookInfo.updatetime).format('YYYY-MM-DD')}</span></li>
+                <li><strong>封面图: </strong><UploadImg id={bookInfo.id} thumb={bookInfo.thumb} /></li>
               </ul>
             }
           </div>

@@ -281,7 +281,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
         return (
           <>
             <a className="viewMenus" style={{ display: 'inline-block', marginRight: '15px' }} type="primary" shape="round" size={'middle'} onClick={onViewMenus(record)}>目录list</a>
-            <a className="viewMenus" style={{ display: 'inline-block', marginRight: '15px' }} href={`/menuList/${record.id}`} target="_blank">目录页</a>
+            <a className="viewMenus" style={{ display: 'inline-block', marginRight: '15px', color: '#1ca9bb' }} href={`/menuList/${record.id}`} target="_blank">目录页</a>
             {record.spiderCode === 4 ? null :
               <>
                 <div style={{ display: 'inline-block', marginRight: '15px' }}>
