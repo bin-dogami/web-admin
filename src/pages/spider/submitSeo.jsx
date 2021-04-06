@@ -312,7 +312,6 @@ const SubmitSeo = () => {
           method: 'post',
           data: {
             links: _seoLinks,
-            dev: isDev ? '1' : '',
           },
           errorTitle: '获取错误',
         }).then((res) => {
@@ -454,7 +453,7 @@ const SubmitSeo = () => {
       dataIndex: 'ctime',
       render: (ctime, record) => {
         return (
-          moment(ctime).format('YYYY-MM-DD')
+          moment(ctime).format('YYYY-MM-DD HH:mm')
         )
       }
     },
