@@ -341,6 +341,26 @@ const MenuList = ({ book, visible, isPage, onAddMenu, triggerReLoading, viewCont
     return record.id
   }
 
+  const fixAllLostMenus = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/fixLostMenus`,
+        method: 'post',
+        data: {
+          ids: [book.id]
+        },
+        errorTitle: '修复错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'string') {
+          data && message.info(data)
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   return (
     <>
       <div style={{ marginBottom: 20 }}>
@@ -349,6 +369,7 @@ const MenuList = ({ book, visible, isPage, onAddMenu, triggerReLoading, viewCont
           <Radio value={false}>正序</Radio>
         </Radio.Group>
         <Button type="primary" size={'middle'} onClick={onDetectIndexAbnormal} style={{ marginRight: 15 }}>index是否异常</Button>
+        <Button type="primary" size={'middle'} onClick={fixAllLostMenus} style={{ marginRight: 15 }}>修复缺失目录</Button>
         {book ? <a data-href={book.from} onClick={onCopyHref} style={{ marginRight: 20, display: 'inline-block' }}>{book.title}</a> : null}
         <Button type="primary" onClick={() => getList(skip, size, isDesc)}><SyncOutlined spin={loading} /></Button>
       </div>

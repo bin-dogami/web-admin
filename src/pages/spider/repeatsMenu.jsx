@@ -51,7 +51,7 @@ const RepeatsMenu = () => {
 
   //   try {
   //     axios({
-  //       url: `${baseUrl}getbook/getRepeatedMenuIds`,
+  //       url: `${baseUrl}getbook/getErrorMenuIds`,
   //       method: 'get',
   //       params: {
   //         id,
@@ -105,10 +105,11 @@ const RepeatsMenu = () => {
       try {
         setSubData([])
         axios({
-          url: `${baseUrl}getbook/getRepeatedMenuIds`,
+          url: `${baseUrl}getbook/getErrorMenuIds`,
           method: 'get',
           params: {
             id: record.id,
+            type: 'menu_insert_abnormal'
           },
           errorTitle: '抓取错误',
         }).then((res) => {

@@ -41,6 +41,23 @@ const GetDatas = ({ onSearchBook }) => {
     }
   }
 
+  const fixAllLostMenus = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/fixLostMenus`,
+        method: 'post',
+        errorTitle: '修复错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'string') {
+          data && message.info(data)
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   const [createBookVisible, setCreateBookVisible] = useState(false)
   const [createType, setCreateType] = useState(false)
 
@@ -85,6 +102,7 @@ const GetDatas = ({ onSearchBook }) => {
         <Button onClick={viewTotalMenus} style={{ marginRight: 15 }}>目录总数</Button>
         <Button onClick={() => setCreateBookVisible(true)} style={{ marginRight: 15 }}>添加书</Button>
         <Button onClick={() => setCreateType(true)} style={{ marginRight: 15 }}>增加分类</Button>
+        <Button onClick={fixAllLostMenus} style={{ marginRight: 15 }}>修复所有缺失目录</Button>
         {/* <Button onClick={() => message.info('功能待开发')}>探查index异常的书</Button> */}
         {/* <Button onClick={() => message.info('功能待开发')}>域名替换</Button> */}
         {/* 用完了记得注释掉 */}
