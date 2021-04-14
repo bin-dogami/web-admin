@@ -270,7 +270,7 @@ const MenuList = ({ book, visible, isPage, onAddMenu, triggerReLoading, viewCont
       dataIndex: 'ctime',
       render: (ctime, record) => {
         return (
-          moment(ctime).format('YYYY-MM-DD')
+          moment(ctime).format('YYYY-MM-DD HH:mm')
         )
       }
     }

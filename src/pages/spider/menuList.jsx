@@ -43,6 +43,7 @@ const MenuPage = (props) => {
 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false)
+  const textareaRef = useRef(null)
   const contentRef = useRef(null)
 
   const [triggerReLoading, setTriggerReLoading] = useState(0)
@@ -189,7 +190,7 @@ const MenuPage = (props) => {
 
         }
       }
-      contentRef.current.focus()
+      textareaRef.current.focus()
     }, 300);
   }
 
@@ -238,11 +239,13 @@ const MenuPage = (props) => {
           const data = res && res.data && res.data.data
           if (typeof data === 'string') {
             message.error(data)
+            menu.content = ''
+            setContentPopData(JSON.parse(JSON.stringify(menu)))
             return
           }
           if (data && typeof data === 'object') {
             menu.content = data.content
-            setContentPopData(menu)
+            setContentPopData(JSON.parse(JSON.stringify(menu)))
           } else {
             message.error('获取内容失败')
           }
@@ -287,9 +290,21 @@ const MenuPage = (props) => {
     })
   }
 
+  const justReload = () => {
+    setToPrevOrNext({
+      id: contentPopData.id,
+      plus: 0
+    })
+  }
+
+  const [contentIsEditing, setContentIsEditing] = useState(false)
+  const [editingContent, setEditingContent] = useState('')
+
   const contentPopDataRef = useRef(contentPopData)
   useEffect(() => {
     contentPopDataRef.current = contentPopData
+
+    setContentIsEditing(false)
   }, [contentPopData])
 
   const keydownEvent = (e) => {
@@ -308,6 +323,62 @@ const MenuPage = (props) => {
       document.documentElement.removeEventListener('keydown', keydownEvent)
     }
   }, [])
+
+  const transformHtmlToText = (dom) => {
+    let text = ''
+    const contentList = dom.children
+    if (contentList.length) {
+      for (const child of contentList) {
+        text += child.innerText + '\n'
+      }
+    }
+    return text
+  }
+  const onContentEdit = (e) => {
+    setEditingContent(transformHtmlToText(contentRef.current))
+    setTimeout(() => {
+      setContentIsEditing(true)
+    }, 300);
+  }
+
+  const onModifyPage = () => {
+    const content = dealContent(editingContent)
+    if (!content.length) {
+      return
+    }
+    if (!content[0].length) {
+      Modal.info({ content: '内容都没有？' })
+      return
+    }
+    try {
+      axios({
+        url: `${baseUrl}fixdata/modifyPage`,
+        method: 'post',
+        data: {
+          content,
+          mId: contentPopData.id,
+          novelId: id
+        },
+        errorTitle: '修改错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'number') {
+          if (data > 0) {
+            message.success(`修改成功并生成${data}页`)
+            justReload()
+            setContentIsEditing(false)
+          } else {
+            message.error('修改失败')
+          }
+        } else {
+          message.error('修改失败')
+        }
+      })
+    } catch (e) {
+      console.log(e)
+      message.error('修改失败: ' + e)
+    }
+  }
 
   return (
     <Wrapper className="wrapper">
@@ -335,7 +406,7 @@ const MenuPage = (props) => {
             name="content"
             rules={[{ required: true, message: '必填' }]}
           >
-            <Input.TextArea ref={contentRef} showCount autoSize={{ minRows: 10 }} />
+            <Input.TextArea ref={textareaRef} showCount autoSize={{ minRows: 10 }} />
           </Form.Item>
         </Form>
       </Modal> : null}
@@ -355,7 +426,15 @@ const MenuPage = (props) => {
             </li>
             <li>
               <strong>内容：</strong>
-              <Content dangerouslySetInnerHTML={{ __html: contentPopData.content }}></Content>
+              {!contentIsEditing ?
+                <Content style={{ minHeight: 120 }} dangerouslySetInnerHTML={{ __html: contentPopData.content || '内容缺失！！！' }} onClick={onContentEdit} ref={contentRef} /> :
+                <Input.TextArea style={{ marginTop: 15 }} value={editingContent} onChange={e => setEditingContent(e.target.value)} showCount autoSize={{ minRows: 10 }} />}
+              {contentIsEditing ? (
+                <>
+                  <Button size="small" onClick={() => setContentIsEditing(false)} style={{ marginRight: 15 }}>取消</Button>
+                  <Button type="primary" size="small" onClick={onModifyPage} >确定</Button>
+                </>
+              ) : null}
             </li>
           </UL>
         </div>

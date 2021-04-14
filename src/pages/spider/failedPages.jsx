@@ -39,33 +39,33 @@ const FailedPages = () => {
     }
   }
 
-  const onVisibleChange = (record, index) => (visible) => {
+  // const onVisibleChange = (record, index) => (visible) => {
 
-    const id = record.id
+  //   const id = record.id
 
-    if (!visible || record.mIds) {
-      return
-    }
+  //   if (!visible || record.mIds) {
+  //     return
+  //   }
 
-    try {
-      axios({
-        url: `${baseUrl}getbook/getFailedMenuIds`,
-        method: 'get',
-        params: {
-          id,
-        },
-        errorTitle: '抓取错误',
-      }).then((res) => {
-        const _data = res && res.data && Array.isArray(res.data.data) ? res.data.data : [];
-        const newData = JSON.parse(JSON.stringify(data))
-        newData[index].mIds = _data.length ? `前20个目录ID：${_data.join(', ')}` : '啥也没有'
-        newData[index].key = `${id}0${id}`
-        setData(newData)
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
+  //   try {
+  //     axios({
+  //       url: `${baseUrl}getbook/getFailedMenuIds`,
+  //       method: 'get',
+  //       params: {
+  //         id,
+  //       },
+  //       errorTitle: '抓取错误',
+  //     }).then((res) => {
+  //       const _data = res && res.data && Array.isArray(res.data.data) ? res.data.data : [];
+  //       const newData = JSON.parse(JSON.stringify(data))
+  //       newData[index].mIds = _data.length ? `前20个目录ID：${_data.join(', ')}` : '啥也没有'
+  //       newData[index].key = `${id}0${id}`
+  //       setData(newData)
+  //     })
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  // }
 
   const columns = [
     {
