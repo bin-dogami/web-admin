@@ -62,7 +62,7 @@ const Last3MenusIndexEq0 = () => {
   const columns = [
     {
       title: '小说ID',
-      dataIndex: 'id',
+      dataIndex: 'novelId',
     },
     {
       title: '小说名称',
@@ -70,7 +70,7 @@ const Last3MenusIndexEq0 = () => {
       width: 120,
       render: (title, record) => {
         return (
-          <a href={`${scanUrl}book/${record.id}`} target="_blank">{title}</a>
+          <a href={`${scanUrl}book/${record.novelId}`} target="_blank">{title}</a>
         )
       }
     },

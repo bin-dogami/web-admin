@@ -6,6 +6,7 @@ import FailedPages from './failedPages'
 import LastMenuLost from './lastMenuLost'
 import Last3MenusIndexEq0 from './last3MenusIndexEq0'
 import RepeatsMenu from './repeatsMenu'
+import ContentInvalid from './contentInvalid'
 const { TabPane } = Tabs;
 
 const Wrapper = styled.div`
@@ -32,6 +33,9 @@ const SpiderError = () => {
         </TabPane>
         <TabPane tab="抓取失败章节" key="4">
           <FailedPages />
+        </TabPane>
+        <TabPane tab="内容正在手打中" key="5">
+          <ContentInvalid />
         </TabPane>
       </Tabs>
     </Wrapper>
