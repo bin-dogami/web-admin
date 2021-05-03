@@ -372,7 +372,7 @@ const FailedPages = () => {
     setMenuValue(value)
   }
 
-  function onSearchMenu (v) {
+  function onSearchMenu(v) {
     try {
       axios({
         url: `${baseUrl}fixdata/getMenuInfo`,
@@ -503,7 +503,7 @@ const FailedPages = () => {
     setAuthorValue(value)
   }
 
-  function onSearchAuthor (id) {
+  function onSearchAuthor(id) {
     setAuthorValue(typeof id === 'number' ? `${id}` : authorValue.trim())
     try {
       axios({
@@ -652,8 +652,13 @@ const FailedPages = () => {
                 </li>
                 <li>
                   <strong>小说名: </strong>
-                  <a href={`${scanUrl}book/${bookInfo.id}`} target="_blank">{bookInfo.title}</a>
+                  <a href={`${scanUrl}book/${bookInfo.id}`} title={`${bookInfo.title}(${bookInfo.otitle})`} target="_blank">{bookInfo.title}{bookInfo.title !== bookInfo.otitle ? `(${bookInfo.otitle})` : ''}</a>
                   <ModifyAction id={bookInfo.id} defaultValue={bookInfo.title} name={"title"} modifyFnName={onModifyBook} />
+                </li>
+                <li>
+                  <strong>seo名: </strong>
+                  <span>{bookInfo.seotitle || '暂无'}</span>
+                  <ModifyAction id={bookInfo.id} defaultValue={bookInfo.seotitle} name={"seotitle"} modifyFnName={onModifyBook} />
                 </li>
                 <li>
                   <strong>来源: </strong>

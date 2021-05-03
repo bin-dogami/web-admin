@@ -75,6 +75,24 @@ const GetDatas = ({ onSearchBook }) => {
     }
   }
 
+  // 修复所有的推荐表里的书的字段（和novel表里的同一名的字段），比如title,thumb
+  const fixRecommends = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/fixRecommends`,
+        method: 'post',
+        errorTitle: '修复错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'string') {
+          data && message.info(data)
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   const [createBookVisible, setCreateBookVisible] = useState(false)
   const [createType, setCreateType] = useState(false)
 
@@ -121,6 +139,7 @@ const GetDatas = ({ onSearchBook }) => {
         <Button onClick={() => setCreateType(true)} style={{ marginRight: 15 }}>增加分类</Button>
         <Button onClick={fixAllLostMenus} style={{ marginRight: 15 }}>修复所有缺失目录</Button>
         <Button onClick={fixPageInvalid} style={{ marginRight: 15 }}>修复内容正在手打中</Button>
+        <Button onClick={fixRecommends} style={{ marginRight: 15 }}>修复所有推荐</Button>
         {/* <Button onClick={() => message.info('功能待开发')}>探查index异常的书</Button> */}
         {/* <Button onClick={() => message.info('功能待开发')}>域名替换</Button> */}
         {/* 用完了记得注释掉 */}
