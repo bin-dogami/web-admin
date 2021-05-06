@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, DatePicker, Input, Button, Table, Radio, message, Modal } from 'antd';
+import { Form, DatePicker, Input, Button, Table, Radio, message, Modal, Select } from 'antd';
 import styled from 'styled-components';
 import axios from '@/utils/axios';
 import { isDev, baseUrl, scanUrl, copyText } from '@/utils/index';
@@ -350,7 +350,7 @@ const SubmitSeo = () => {
       title: '序号',
       dataIndex: 'number',
       width: 60,
-      render (text, record, index) {
+      render(text, record, index) {
         return (
           <span>{index + 1}</span>
         )
@@ -405,7 +405,7 @@ const SubmitSeo = () => {
       title: '序号',
       dataIndex: 'number',
       width: 60,
-      render (text, record, index) {
+      render(text, record, index) {
         return (
           <span>{index + 1}</span>
         )
@@ -511,12 +511,62 @@ const SubmitSeo = () => {
     }
   }
 
+  const [allBooks, setAllBooks] = useState([])
+  const [allBooksOptions, setAllBooksOptions] = useState([])
+  const onGetAllBooks = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/getAllOnlineBooks`,
+        method: 'get',
+        errorTitle: '获取错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (Array.isArray(data)) {
+          const list = []
+          const options = [{
+            label: '选中全部',
+            value: -1
+          }]
+          let i = 0
+          while (data.length) {
+            list.push(data.splice(0, 20).map(({ id }) => id))
+            options.push({
+              label: `${i * 20}~${(i + 1) * 20}`,
+              value: i
+            })
+            i++
+          }
+          setAllBooks(list)
+          setAllBooksOptions(options)
+        } else {
+          message.error('获取错误')
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const onSelectBooks = key => {
+    let books = []
+    if (key == -1) {
+      books = allBooks.reduce((list, v) => [...list, ...v], [])
+    } else {
+      books = allBooks[key]
+    }
+    if (books && books.length) {
+      _setAddedBooksIds(books)
+    }
+  }
+
   return (
     <Wrapper className="wrapper">
       <Menus name={'submitSeo'} />
       <div className="chunk" style={{ marginBottom: 20 }}>
         <div>
           <Button onClick={onCreateSiteMap} loading={createSitemapLoading} style={{ marginRight: 15 }}>生成sitemap文件</Button>
+          <Button onClick={onGetAllBooks} style={{ marginRight: 15 }}>获取所有上线书</Button>
+          {allBooks.length ? <Select placeholder="选择一个" options={allBooksOptions} onChange={onSelectBooks} style={{ marginRight: 15, width: 100 }} /> : null}
           {/* <Button onClick={() => onSetMenusOnline('')} style={{ marginRight: 15 }}>上线所有目录</Button>
           <Button onClick={() => onSetBooksOnline('')} style={{ marginRight: 15 }}>上线所有书本</Button> */}
         </div>
