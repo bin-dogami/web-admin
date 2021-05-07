@@ -459,32 +459,9 @@ const SubmitSeo = () => {
     },
   ]
 
-  useEffect(() => {
-    // 一次提交最多 maxSubmitCountOneTime(2000) 条数据，多的把目录的截断，因为书选不了那么多
-    if (addedBooksIds.length + addedMenuIds.length > maxSubmitCountOneTime) {
-      _setAddedMenuIds(addedMenuIds.slice(0, maxSubmitCountOneTime - addedBooksIds.length))
-      return
-    }
-    const books = addedBooksIds.map(id => `https://m.zjjdxr.com/book/${id}`)
-    let menus = addedMenuIds.map(id => `https://m.zjjdxr.com/page/${id}`)
-    setSeoLinks(`${books.join('\n')}\n\n${menus.join('\n')}`.trim())
-  }, [addedMenuIds, addedBooksIds])
-
-  useEffect(() => {
-    message.info(`已添加了 ${seoLinks.split('\n').length} 条待提交收录的数据`)
-  }, [seoLinks])
-
   const rowKey = (record) => {
     return record.id
   }
-
-  useEffect(() => {
-    onSearchMenus()
-  }, [mOnline])
-
-  useEffect(() => {
-    onSearchBooks()
-  }, [bOnline])
 
   const onCreateSiteMap = () => {
     if (createSitemapLoading) {
@@ -559,6 +536,44 @@ const SubmitSeo = () => {
     }
   }
 
+  // 选择简介和书一样
+  const [addedDescIds, setAddedDescIds] = useState([])
+  const onSelectIntroduce = key => {
+    let books = []
+    if (key == -1) {
+      books = allBooks.reduce((list, v) => [...list, ...v], [])
+    } else {
+      books = allBooks[key]
+    }
+    if (books && books.length) {
+      setAddedDescIds(books)
+    }
+  }
+
+  useEffect(() => {
+    // 一次提交最多 maxSubmitCountOneTime(2000) 条数据，多的把目录的截断，因为书选不了那么多
+    if (addedBooksIds.length + addedMenuIds.length > maxSubmitCountOneTime) {
+      _setAddedMenuIds(addedMenuIds.slice(0, maxSubmitCountOneTime - addedBooksIds.length))
+      return
+    }
+    const books = addedBooksIds.map(id => `https://m.zjjdxr.com/book/${id}`)
+    const menus = addedMenuIds.map(id => `https://m.zjjdxr.com/page/${id}`)
+    const descs = addedDescIds.map(id => `https://m.zjjdxr.com/introduce/${id}`)
+    setSeoLinks(`${descs.join('\n')}${books.join('\n')}\n\n${menus.join('\n')}`.trim())
+  }, [addedMenuIds, addedBooksIds, addedDescIds])
+
+  useEffect(() => {
+    message.info(`已添加了 ${seoLinks.split('\n').length} 条待提交收录的数据`)
+  }, [seoLinks])
+
+  useEffect(() => {
+    onSearchMenus()
+  }, [mOnline])
+
+  useEffect(() => {
+    onSearchBooks()
+  }, [bOnline])
+
   return (
     <Wrapper className="wrapper">
       <Menus name={'submitSeo'} />
@@ -566,7 +581,8 @@ const SubmitSeo = () => {
         <div>
           <Button onClick={onCreateSiteMap} loading={createSitemapLoading} style={{ marginRight: 15 }}>生成sitemap文件</Button>
           <Button onClick={onGetAllBooks} style={{ marginRight: 15 }}>获取所有上线书</Button>
-          {allBooks.length ? <Select placeholder="选择一个" options={allBooksOptions} onChange={onSelectBooks} style={{ marginRight: 15, width: 100 }} /> : null}
+          {allBooks.length ? <Select placeholder="选择书本" options={allBooksOptions} onChange={onSelectBooks} style={{ marginRight: 15, width: 100 }} /> : null}
+          {allBooks.length ? <Select placeholder="选择简介" options={allBooksOptions} onChange={onSelectIntroduce} style={{ marginRight: 15, width: 100 }} /> : null}
           {/* <Button onClick={() => onSetMenusOnline('')} style={{ marginRight: 15 }}>上线所有目录</Button>
           <Button onClick={() => onSetBooksOnline('')} style={{ marginRight: 15 }}>上线所有书本</Button> */}
         </div>
