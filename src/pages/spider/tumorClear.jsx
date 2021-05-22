@@ -127,6 +127,30 @@ const TumorClear = () => {
     }
   }
 
+  // 修复所有>= 某个page id 的章节内容
+  const onFixPagesContentGtId = (text, name, pageId) => () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata/fixPagesContentGtId`,
+        method: 'Post',
+        data: {
+          id: pageId,
+        },
+        errorTitle: '修复错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (data === '') {
+          message.success('修复成功')
+        } else {
+          message.error(typeof data === 'string' ? data : '有未知错误')
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  // 对某一本书进行修复
   const onFixPagesContent = (text, name, novelId) => () => {
     try {
       axios({
@@ -264,6 +288,7 @@ const TumorClear = () => {
             buttonStyle="solid"
             style={{ marginLeft: 20 }}
           />
+          <ModifyAction style={{ marginLeft: 20 }} html="修复章节内容" name={"fixPagesContentGtId"} modifyFnName={onFixPagesContentGtId} />
         </Form.Item>
       </div>
       <Table dataSource={list} columns={columns} rowKey={rowKey} pagination={{ pageSize: 100 }} />

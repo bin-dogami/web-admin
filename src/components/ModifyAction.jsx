@@ -21,7 +21,7 @@ const Wrapper = styled(Tooltip)`
   }
 `
 
-const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) => {
+const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName, style }) => {
   const [fieldValue, setFieldValue] = useState(defaultValue || '')
   const onChangeFieldValue = e => {
     const { value } = e.target;
@@ -98,6 +98,13 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
         <Button type="primary" onClick={onModifyFieldValue(id)} >确定要修复这本书的所有章节内容？</Button>
       </>
     )
+  } else if (name === 'fixPagesContentGtId') {
+    dom = (
+      <>
+        <Input allowClear value={fieldValue} style={{ width: 'auto' }} onChange={onChangeFieldValue} placeholder="输入>的page id" />
+        <Button type="primary" onClick={onModifyFieldValue(id)} >确定要修复>此章节的所有章节内容？</Button>
+      </>
+    )
   } else {
     dom = (
       <>
@@ -115,7 +122,7 @@ const ModifyAction = ({ id, name, html, status, defaultValue, modifyFnName }) =>
 
   return (
     <Wrapper title={htmlModifyBookField} placement={["clearBookContents"].includes(name) ? "left" : "right"} onVisibleChange={onVisibleChange} trigger="click" overlayStyle={{ maxWidth: 800 }}>
-      <span className="btn" style={{ color: '#1890ff', cursor: 'pointer' }}>{html || <FormOutlined />}</span>
+      <span className="btn" style={{ color: '#1890ff', cursor: 'pointer', ...style }}>{html || <FormOutlined />}</span>
     </Wrapper>
   )
 }

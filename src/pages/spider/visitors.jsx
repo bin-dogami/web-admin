@@ -39,7 +39,7 @@ const NoWrap = styled.div`
 `
 
 const dateFormat = 'YYYY-MM-DD'
-const startDate = moment().subtract(1, 'd')
+const startDate = moment().subtract(0, 'd')
 const endDate = moment().add(1, 'd')
 const hostOptions = [
   {
@@ -75,7 +75,7 @@ const Visitors = () => {
   const [collectLoading, setCollectLoading] = useState(false)
   const [date, setDate] = useState([moment(startDate, dateFormat), moment(endDate, dateFormat)])
   const [host, sethost] = useState('m')
-  const [spider, setSpider] = useState('1')
+  const [spider, setSpider] = useState('2')
   const [skip, setSkip] = useState(1)
   const [size, setSize] = useState(100)
   const [total, setTotal] = useState(0)
@@ -83,6 +83,7 @@ const Visitors = () => {
   const [spiderFilters, setSpiderFilters] = useState([])
   const [ipFilters, setIpFilters] = useState([])
   const [noApi, setNoApi] = useState('1')
+  const [responseStatus, setResponseStatus] = useState('1')
 
   const collectLogs = () => {
     if (collectLoading) {
@@ -125,7 +126,8 @@ const Visitors = () => {
           sDate: moment(date[0]).format(dateFormat),
           eDate: moment(date[1]).format(dateFormat),
           host,
-          spider
+          spider,
+          responseStatus
         },
         errorTitle: '获取错误',
       }).then((res) => {
@@ -159,7 +161,7 @@ const Visitors = () => {
       title: '序号',
       dataIndex: 'number',
       width: 70,
-      render (text, record, index) {
+      render(text, record, index) {
         return (
           <span>{index + 1}</span>
         )
@@ -259,6 +261,10 @@ const Visitors = () => {
     setNoApi(e.target.value)
   }
 
+  const onChangeResponseStatus = (e) => {
+    setResponseStatus(e.target.value)
+  }
+
   const onTableChange = (pagination) => {
     if (pagination.current !== skip || pagination.pageSize !== size) {
       getList(pagination.current || 1, pagination.pageSize || size, host, spider);
@@ -312,6 +318,14 @@ const Visitors = () => {
               options={[{ value: '0', label: '全看' }, { value: '1', label: '不看api' }]}
               onChange={onChangeNoApi}
               value={noApi}
+              optionType="button"
+              buttonStyle="solid"
+              style={{ marginLeft: 15 }}
+            />
+            <Radio.Group
+              options={[{ value: '0', label: '全看' }, { value: '1', label: '只看200' }]}
+              onChange={onChangeResponseStatus}
+              value={responseStatus}
               optionType="button"
               buttonStyle="solid"
               style={{ marginLeft: 15 }}

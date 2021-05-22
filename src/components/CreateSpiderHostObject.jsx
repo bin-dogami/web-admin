@@ -31,6 +31,7 @@ const CreateSpiderHostObject = ({ visible, setVisible }) => {
     menus: '',
     mname: '',
     content: '',
+    navs: '',
   }
 
   const [data, setData] = useState([])
@@ -138,6 +139,10 @@ const CreateSpiderHostObject = ({ visible, setVisible }) => {
       dataIndex: 'content',
     },
     {
+      title: '各分类页',
+      dataIndex: 'navs',
+    },
+    {
       title: '操作',
       width: 100,
       render: (k, record) => {
@@ -156,7 +161,7 @@ const CreateSpiderHostObject = ({ visible, setVisible }) => {
 
   return (
     <Wrapper
-      width={800}
+      width={1000}
       title="添加要抓取的网站的dom结构"
       visible={visible}
       onCancel={closePop}
@@ -227,6 +232,13 @@ const CreateSpiderHostObject = ({ visible, setVisible }) => {
           rules={[{ required: true }]}
         >
           <Input placeholder="content selector" />
+        </Form.Item>
+        <Form.Item
+          label="各分类页"
+          name="navs"
+          rules={[{ required: true }]}
+        >
+          <Input placeholder="navs selector" />
         </Form.Item>
       </Form>
       <Table dataSource={data} columns={columns} rowKey={rowKey} />

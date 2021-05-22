@@ -76,6 +76,23 @@ const GetDatas = ({ onSearchBook }) => {
     }
   }
 
+  const fixBoosFrom = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata2/fixBoosFrom`,
+        method: 'post',
+        errorTitle: '修复错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'string') {
+          data && message.info(data)
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   // 修复所有的推荐表里的书的字段（和novel表里的同一名的字段），比如title,thumb
   const fixRecommends = () => {
     try {
@@ -169,6 +186,7 @@ const GetDatas = ({ onSearchBook }) => {
           : null
         }
         <Button onClick={() => setAddSpiderHostObject(true)} style={{ marginRight: 15 }}>添加抓取结构</Button>
+        <Button onClick={fixBoosFrom} style={{ marginRight: 15 }}>paoshuzw.com => xbiquge.la</Button>
         {/* <Button onClick={() => message.info('功能待开发')}>探查index异常的书</Button> */}
         {/* <Button onClick={() => message.info('功能待开发')}>域名替换</Button> */}
         {/* 用完了记得注释掉 */}
