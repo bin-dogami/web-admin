@@ -32,6 +32,7 @@ const CreateSpiderHostObject = ({ visible, setVisible }) => {
     mname: '',
     content: '',
     navs: '',
+    bookUrlRule: '',
   }
 
   const [data, setData] = useState([])
@@ -115,32 +116,47 @@ const CreateSpiderHostObject = ({ visible, setVisible }) => {
       dataIndex: 'host',
     },
     {
-      title: 'author',
+      title: 'author/desc',
       dataIndex: 'author',
+      render: (k, record) => {
+        return (
+          <>
+            <p>{record.author}</p>
+            <p>{record.description}</p>
+          </>
+        )
+      }
     },
     {
-      title: 'description',
-      dataIndex: 'description',
-    },
-    {
-      title: 'type',
+      title: '小说分类',
       dataIndex: 'type',
     },
     {
-      title: 'thumb',
-      dataIndex: 'thumb',
-    },
-    {
-      title: '章节标题',
+      title: '标题/内容/thumb',
       dataIndex: 'mname',
-    },
-    {
-      title: '章节内容',
-      dataIndex: 'content',
+      width: 120,
+      render: (k, record) => {
+        return (
+          <>
+            <p>{record.mname}</p>
+            <p>{record.content}</p>
+            <p>{record.thumb}</p>
+          </>
+        )
+      }
     },
     {
       title: '各分类页',
       dataIndex: 'navs',
+      width: 100,
+    },
+    {
+      title: '书页url规则',
+      dataIndex: 'bookUrlRule',
+      width: 150,
+      render: (bookUrlRule, record) => {
+        return <span style={{ wordBreak: 'break-all' }}>{bookUrlRule}</span>
+      }
     },
     {
       title: '操作',
@@ -149,6 +165,7 @@ const CreateSpiderHostObject = ({ visible, setVisible }) => {
         return (
           <>
             <a onClick={() => modify(record)}>修改/复制</a>
+            <br />
           </>
         )
       }
@@ -239,6 +256,13 @@ const CreateSpiderHostObject = ({ visible, setVisible }) => {
           rules={[{ required: true }]}
         >
           <Input placeholder="navs selector" />
+        </Form.Item>
+        <Form.Item
+          label="书页url规则"
+          name="bookUrlRule"
+          rules={[{ required: true }]}
+        >
+          <Input placeholder="书页url规则" />
         </Form.Item>
       </Form>
       <Table dataSource={data} columns={columns} rowKey={rowKey} />
