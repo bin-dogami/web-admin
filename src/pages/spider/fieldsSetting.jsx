@@ -685,8 +685,8 @@ const FailedPages = () => {
                   <strong>完本且抓取完了: </strong><span>{bookInfo.isSpiderComplete ? '已抓取完' : '未完'}</span>
                   <ModifyAction id={bookInfo.id} name={"isSpiderComplete"} status={bookInfo.isSpiderComplete} modifyFnName={onModifyBook} />
                 </li>
-                <li><strong>创建时间: </strong><span>{moment(bookInfo.ctime).format('YYYY-MM-DD')}</span></li>
-                <li><strong>更新时间: </strong><span>{moment(bookInfo.updatetime).format('YYYY-MM-DD')}</span></li>
+                <li><strong>创建时间: </strong><span>{moment(bookInfo.ctime).format('YYYY-MM-DD HH:mm')}</span></li>
+                <li><strong>更新时间: </strong><span>{moment(bookInfo.updatetime).format('YYYY-MM-DD HH:mm')}</span></li>
                 <li><strong>封面图: </strong><UploadImg id={bookInfo.id} thumb={bookInfo.thumb} /></li>
               </ul>
             }

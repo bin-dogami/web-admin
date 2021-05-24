@@ -259,7 +259,7 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
       dataIndex: 'ctime',
       render: (ctime, record) => {
         return (
-          moment(ctime).format('YYYY-MM-DD')
+          moment(ctime).format('YYYY-MM-DD HH:mm')
         )
       }
     },

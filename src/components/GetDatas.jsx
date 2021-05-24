@@ -170,6 +170,24 @@ const GetDatas = ({ onSearchBook }) => {
     }
   }
 
+  // 修复所有otitle为空的书
+  const onFixAllOtitles = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata2/fixAllOtitle`,
+        method: 'post',
+        errorTitle: '获取错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data;
+        if (typeof data === 'string') {
+          message.info(data || '有错误了')
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   const [addSpiderHostObject, setAddSpiderHostObject] = useState(false)
 
   return (
@@ -187,6 +205,7 @@ const GetDatas = ({ onSearchBook }) => {
           : null
         }
         <Button onClick={() => setAddSpiderHostObject(true)} style={{ marginRight: 15 }}>添加抓取结构</Button>
+        <Button onClick={onFixAllOtitles} style={{ marginRight: 15 }}>修复所有otitle为空的书</Button>
         {/* <Button onClick={() => message.info('功能待开发')}>探查index异常的书</Button> */}
         {/* <Button onClick={() => message.info('功能待开发')}>域名替换</Button> */}
         {/* 用完了记得注释掉 */}
