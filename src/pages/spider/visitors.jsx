@@ -271,6 +271,19 @@ const Visitors = () => {
     }
   };
 
+  const changeDate = (toDay) => {
+    if (toDay === 'prevDay') {
+      const prev1Date = date[0].subtract(1, 'd')
+      const prev2Date = date[1].subtract(1, 'd')
+      setDate([moment(prev1Date, dateFormat), moment(prev2Date, dateFormat)])
+    } else if (toDay === 'nextDay') {
+      const next1Date = date[0].add(1, 'd')
+      const next2Date = date[1].add(1, 'd')
+      setDate([moment(next1Date, dateFormat), moment(next2Date, dateFormat)])
+    }
+    onSearch()
+  }
+
   useEffect(() => {
     getList(skip, size, host, spider)
   }, [])
@@ -294,17 +307,21 @@ const Visitors = () => {
         <div className="content">
           <Form.Item label="查询">
             <RangePicker
-              defaultValue={date}
+              // defaultValue={date}
+              value={date}
               format={dateFormat}
               onChange={(date, dateString) => setDate(dateString)}
+              style={{ marginBottom: 20 }}
             />
+            <Button onClick={() => changeDate('prevDay')} style={{ marginLeft: 15, marginBottom: 20 }}>前一天</Button>
+            <Button onClick={() => changeDate('nextDay')} style={{ marginLeft: 15, marginBottom: 20 }}>后一天</Button>
+            <br />
             <Radio.Group
               options={hostOptions}
               onChange={onChange}
               value={host}
               optionType="button"
               buttonStyle="solid"
-              style={{ marginLeft: 15 }}
             />
             <Radio.Group
               options={spiderOptions}
