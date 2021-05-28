@@ -178,6 +178,16 @@ const BookList = ({ onSearchBook, onSpider, setBookInfo, setMenusPopVisible }) =
 
   const columns = [
     {
+      title: '序号',
+      dataIndex: 'number',
+      width: 50,
+      render(text, record, index) {
+        return (
+          <span>{index + 1}</span>
+        )
+      }
+    },
+    {
       title: '小说ID',
       dataIndex: 'id',
       width: 100,

@@ -550,6 +550,25 @@ const SubmitSeo = () => {
     }
   }
 
+  const onGetCanSubmitSeoNum = () => {
+    try {
+      axios({
+        url: `${baseUrl}fixdata2/getCanSubmitSeoNum`,
+        method: 'get',
+        errorTitle: '获取错误',
+      }).then((res) => {
+        const data = res && res.data && res.data.data
+        if (typeof data === 'number' || typeof data === 'string') {
+          message.info('剩余可提交收录数为: ' + data)
+        } else {
+          message.error('获取错误: ' + JSON.stringify(data))
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     // 一次提交最多 maxSubmitCountOneTime(2000) 条数据，多的把目录的截断，因为书选不了那么多
     if (addedBooksIds.length + addedMenuIds.length > maxSubmitCountOneTime) {
@@ -579,6 +598,7 @@ const SubmitSeo = () => {
       <Menus name={'submitSeo'} />
       <div className="chunk" style={{ marginBottom: 20 }}>
         <div>
+          <Button onClick={onGetCanSubmitSeoNum} loading={createSitemapLoading} style={{ marginRight: 15 }}>获取剩余可提交收录数</Button>
           <Button onClick={onCreateSiteMap} loading={createSitemapLoading} style={{ marginRight: 15 }}>生成sitemap文件</Button>
           <Button onClick={onGetAllBooks} style={{ marginRight: 15 }}>获取所有上线书</Button>
           {allBooks.length ? <Select placeholder="选择书本" options={allBooksOptions} onChange={onSelectBooks} style={{ marginRight: 15, width: 100 }} /> : null}

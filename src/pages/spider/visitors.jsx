@@ -127,13 +127,14 @@ const Visitors = () => {
           eDate: moment(date[1]).format(dateFormat),
           host,
           spider,
+          noApi,
           responseStatus
         },
         errorTitle: '获取错误',
       }).then((res) => {
         setLoading(false)
         const [data, count] = res && res.data && Array.isArray(res.data.data) && res.data.data.length > 1 ? res.data.data : [[], 0];
-        const fData = noApi === '1' ? data.filter(({ url }) => !url.includes('/scan/') && !url.includes('/fixdata/')) : data
+        const fData = noApi === '1' ? data.filter(({ url }) => !url.includes('/scan/') && !url.includes('/fixdata')) : data
         setData(fData)
         if (count.length) {
           setTotal(+count[0].total)
@@ -271,10 +272,15 @@ const Visitors = () => {
     }
   };
 
-  const changeDate = (toDay) => {
+  const changeDate = (date, dateString) => {
+    setDate(date)
+  }
+
+  const toPrevNextDate = (toDay) => {
     if (toDay === 'prevDay') {
       const prev1Date = date[0].subtract(1, 'd')
       const prev2Date = date[1].subtract(1, 'd')
+      console.log([moment(prev1Date, dateFormat), moment(prev2Date, dateFormat)], typeof [moment(prev1Date, dateFormat), moment(prev2Date, dateFormat)])
       setDate([moment(prev1Date, dateFormat), moment(prev2Date, dateFormat)])
     } else if (toDay === 'nextDay') {
       const next1Date = date[0].add(1, 'd')
@@ -310,11 +316,11 @@ const Visitors = () => {
               // defaultValue={date}
               value={date}
               format={dateFormat}
-              onChange={(date, dateString) => setDate(dateString)}
+              onChange={changeDate}
               style={{ marginBottom: 20 }}
             />
-            <Button onClick={() => changeDate('prevDay')} style={{ marginLeft: 15, marginBottom: 20 }}>前一天</Button>
-            <Button onClick={() => changeDate('nextDay')} style={{ marginLeft: 15, marginBottom: 20 }}>后一天</Button>
+            <Button onClick={() => toPrevNextDate('prevDay')} style={{ marginLeft: 15, marginBottom: 20 }}>前一天</Button>
+            <Button onClick={() => toPrevNextDate('nextDay')} style={{ marginLeft: 15, marginBottom: 20 }}>后一天</Button>
             <br />
             <Radio.Group
               options={hostOptions}
