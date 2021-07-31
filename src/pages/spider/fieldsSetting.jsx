@@ -663,6 +663,7 @@ const FailedPages = () => {
                 <li>
                   <strong>来源: </strong>
                   <a data-href={bookInfo.from} onClick={onCopyHref}>{bookInfo.from}</a>
+                  <ModifyAction id={bookInfo.id} defaultValue={bookInfo.from} name={"from"} modifyFnName={onModifyBook} />
                   <span className="btn" onClick={onSpider(bookInfo.from)}>再次抓取</span>
                 </li>
                 <li><strong>访问量: </strong><span>{bookInfo.viewnum}</span></li>
